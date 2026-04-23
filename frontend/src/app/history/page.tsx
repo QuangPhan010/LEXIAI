@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Navbar from '@/components/Navbar';
+import { API_BASE_URL } from '@/lib/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FileText, Calendar, ChevronRight, Trash2, Zap, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
@@ -32,7 +33,7 @@ export default function HistoryPage() {
     setLoading(true);
     try {
       const endpoint = type === 'cv' ? 'history/' : 'interviews/';
-      const res = await fetch(`http://localhost:8000/api/${endpoint}`, {
+      const res = await fetch(`${API_BASE_URL}/${endpoint}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
@@ -51,7 +52,7 @@ export default function HistoryPage() {
     const token = localStorage.getItem('access_token');
     const endpoint = type === 'cv' ? 'history/' : 'interviews/';
     try {
-      await fetch(`http://localhost:8000/api/${endpoint}${id}/`, {
+      await fetch(`${API_BASE_URL}/${endpoint}${id}/`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });

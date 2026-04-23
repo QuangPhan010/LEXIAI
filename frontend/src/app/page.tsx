@@ -9,6 +9,7 @@ import { Sparkles, FileSearch, ArrowRight, GitFork, Globe, BrainCircuit, Rocket,
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { resolveGeminiModel } from '@/lib/geminiModel';
+import { API_BASE_URL } from '@/lib/api';
 import { Briefcase } from 'lucide-react';
 
 export default function Home() {
@@ -32,7 +33,7 @@ export default function Home() {
 
   const fetchHistory = async (token: string) => {
     try {
-      const res = await fetch('http://localhost:8000/api/history/', {
+      const res = await fetch(`${API_BASE_URL}/history/`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
@@ -48,7 +49,7 @@ export default function Home() {
 
   const fetchProfile = async (token: string) => {
     try {
-      const res = await fetch('http://localhost:8000/api/profile/', {
+      const res = await fetch(`${API_BASE_URL}/profile/`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {

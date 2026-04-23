@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef, Suspense } from 'react';
 import Navbar from '@/components/Navbar';
+import { API_BASE_URL } from '@/lib/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, User, Bot, Zap, RefreshCw, Trophy, Lightbulb, FileText, ChevronRight } from 'lucide-react';
 import { GoogleGenerativeAI } from "@google/generative-ai";
@@ -42,7 +43,7 @@ function MockInterviewContent() {
 
     setLoading(true);
     try {
-      const res = await fetch(`http://localhost:8000/api/interviews/${id}/`, {
+      const res = await fetch(`${API_BASE_URL}/interviews/${id}/`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
@@ -256,7 +257,7 @@ function MockInterviewContent() {
       const token = localStorage.getItem('access_token');
       if (token) {
         try {
-          await fetch('http://localhost:8000/api/interviews/', {
+          await fetch(`${API_BASE_URL}/interviews/`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

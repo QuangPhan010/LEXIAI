@@ -6,6 +6,7 @@ import { Mail, Lock, User, ArrowRight, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
+import { API_BASE_URL } from '@/lib/api';
 
 export default function SignupPage() {
   const [username, setUsername] = useState('');
@@ -21,7 +22,7 @@ export default function SignupPage() {
     if (!email) return alert('Vui lòng nhập email trước.');
     setOtpLoading(true);
     try {
-      const res = await fetch('http://localhost:8000/api/auth/send-otp/', {
+      const res = await fetch(`${API_BASE_URL}/auth/send-otp/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
@@ -46,7 +47,7 @@ export default function SignupPage() {
     setLoading(true);
 
     try {
-      const res = await fetch('http://localhost:8000/api/auth/register/', {
+      const res = await fetch(`${API_BASE_URL}/auth/register/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, email, password, otp }),

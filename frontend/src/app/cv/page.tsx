@@ -4,6 +4,7 @@ import React, { useState, useEffect, Suspense } from 'react';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Upload, FileText, BarChart3, AlertCircle, CheckCircle2, ChevronRight, Zap, Trophy, ClipboardCheck, Target, Key } from 'lucide-react';
 import Navbar from '@/components/Navbar';
+import { API_BASE_URL } from '@/lib/api';
 import { useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { resolveGeminiModel } from '@/lib/geminiModel';
@@ -118,7 +119,7 @@ function CVAnalyzerContent() {
 
     setLoading(true);
     try {
-      const res = await fetch(`http://localhost:8000/api/history/${id}/`, {
+      const res = await fetch(`${API_BASE_URL}/history/${id}/`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
@@ -182,7 +183,7 @@ function CVAnalyzerContent() {
     try {
       const formData = new FormData();
       formData.append('file', file);
-      const extractResponse = await fetch('http://localhost:8000/api/cv/extract-text/', {
+      const extractResponse = await fetch(`${API_BASE_URL}/cv/extract-text/`, {
         method: 'POST',
         body: formData,
       });
@@ -277,7 +278,7 @@ function CVAnalyzerContent() {
       const accessToken = localStorage.getItem('access_token');
       if (accessToken) {
         try {
-          await fetch('http://localhost:8000/api/history/', {
+          await fetch(`${API_BASE_URL}/history/`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
             body: JSON.stringify({
