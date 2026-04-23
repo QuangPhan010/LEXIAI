@@ -80,7 +80,7 @@ export default function LoginPage() {
               />
             </div>
             <div className="flex justify-end">
-              <Link href="/auth/forgot-password" size="sm" className="text-sm text-accent hover:underline">
+              <Link href="/auth/forgot-password" className="text-sm text-accent hover:underline">
                 Quên mật khẩu?
               </Link>
             </div>
