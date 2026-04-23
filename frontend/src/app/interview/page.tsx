@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import Navbar from '@/components/Navbar';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, User, Bot, Zap, RefreshCw, Trophy, Lightbulb, FileText, ChevronRight } from 'lucide-react';
@@ -13,7 +13,7 @@ interface Message {
   content: string;
 }
 
-export default function MockInterviewPage() {
+function MockInterviewContent() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -535,5 +535,17 @@ export default function MockInterviewPage() {
         )}
       </AnimatePresence>
     </div>
+  );
+}
+
+export default function MockInterviewPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-t-accent border-white/10 rounded-full animate-spin" />
+      </div>
+    }>
+      <MockInterviewContent />
+    </Suspense>
   );
 }
