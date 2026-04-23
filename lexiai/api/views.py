@@ -46,6 +46,68 @@ class SendOTPView(APIView):
         except Exception as e:
             return Response({"error": f"Không thể gửi email: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+class ForgotPasswordView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        email = request.data.get('email')
+        if not email:
+            return Response({"error": "Vui lòng cung cấp email."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Kiểm tra email có tồn tại không
+        try:
+            User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response({"error": "Email này không tồn tại trong hệ thống."}, status=status.HTTP_404_NOT_FOUND)
+
+        otp_code = str(random.randint(100000, 999999))
+        expires_at = timezone.now() + timedelta(minutes=5)
+
+        EmailOTP.objects.update_or_create(
+            email=email,
+            defaults={'code': otp_code, 'expires_at': expires_at}
+        )
+
+        # Gửi email
+        try:
+            send_mail(
+                'Đặt lại mật khẩu LexiAI',
+                f'Mã xác nhận đặt lại mật khẩu của bạn là: {otp_code}. Mã này có hiệu lực trong 5 phút.',
+                None,
+                [email],
+                fail_silently=False,
+            )
+            return Response({"message": "Mã xác nhận đã được gửi đến email của bạn."}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error": f"Không thể gửi email: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class ResetPasswordView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        email = request.data.get('email')
+        otp_code = request.data.get('otp')
+        new_password = request.data.get('new_password')
+
+        if not email or not otp_code or not new_password:
+            return Response({"error": "Vui lòng cung cấp đầy đủ email, mã OTP và mật khẩu mới."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            otp_record = EmailOTP.objects.get(email=email, code=otp_code)
+            if otp_record.is_expired():
+                return Response({"error": "Mã OTP đã hết hạn."}, status=status.HTTP_400_BAD_REQUEST)
+        except EmailOTP.DoesNotExist:
+            return Response({"error": "Mã OTP không chính xác."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = User.objects.get(email=email)
+            user.set_password(new_password)
+            user.save()
+            otp_record.delete()
+            return Response({"message": "Mật khẩu đã được thay đổi thành công."}, status=status.HTTP_200_OK)
+        except User.DoesNotExist:
+            return Response({"error": "Không tìm thấy người dùng tương ứng với email này."}, status=status.HTTP_404_NOT_FOUND)
+
 class RegisterView(APIView):
     permission_classes = [permissions.AllowAny]
 
