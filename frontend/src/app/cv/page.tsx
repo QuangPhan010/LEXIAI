@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Upload, FileText, BarChart3, AlertCircle, CheckCircle2, ChevronRight, Zap, Trophy, ClipboardCheck, Target, Key } from 'lucide-react';
 import Navbar from '@/components/Navbar';
@@ -92,7 +92,7 @@ function parseAnalysisJson(rawText: string): AnalysisResult {
   } as AnalysisResult;
 }
 
-export default function CVAnalyzer() {
+function CVAnalyzerContent() {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [extracting, setExtracting] = useState(false);
@@ -488,5 +488,17 @@ export default function CVAnalyzer() {
         )}
       </main>
     </div>
+  );
+}
+
+export default function CVAnalyzer() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-t-accent border-white/10 rounded-full animate-spin" />
+      </div>
+    }>
+      <CVAnalyzerContent />
+    </Suspense>
   );
 }
