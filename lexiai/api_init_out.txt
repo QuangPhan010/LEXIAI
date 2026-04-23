@@ -1,0 +1,1 @@
+CommandError: 'lexiai' conflicts with the name of an existing Python module and cannot be used as an app directory. Please try another directory.

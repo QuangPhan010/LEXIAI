@@ -1,0 +1,6 @@
+Django==5.2.5
+djangorestframework
+django-cors-headers
+pdfminer.six
+docx2txt
+djangorestframework-simplejwt

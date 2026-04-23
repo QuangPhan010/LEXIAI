@@ -1,0 +1,141 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #020617;
+  --muted: #f1f5f9;
+  --muted-foreground: #1e293b;
+  --accent: #6366f1;
+  --accent-hover: #4f46e5;
+  --glass: rgba(0, 0, 0, 0.04);
+  --glass-border: rgba(0, 0, 0, 0.1);
+  --card-hover-bg: rgba(0, 0, 0, 0.03);
+  --input-bg: #ffffff;
+  --text-gradient-from: #020617;
+  --text-gradient-to: #334155;
+}
+
+.dark {
+  --background: #030303;
+  --foreground: #fafafa;
+  --muted: #111111;
+  --muted-foreground: #a1a1aa;
+  --glass: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --card-hover-bg: rgba(255, 255, 255, 0.05);
+  --input-bg: rgba(9, 9, 11, 0.5);
+  --text-gradient-from: #ffffff;
+  --text-gradient-to: #a1a1aa;
+}
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  
+  --color-glass: var(--glass);
+  --color-glass-border: var(--glass-border);
+  
+  --color-input: var(--input-bg);
+  
+  --font-sans: var(--font-geist-sans), "Inter", system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), monospace;
+}
+
+@layer base {
+  body {
+    @apply bg-background text-foreground antialiased selection:bg-accent/30;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+}
+
+@layer components {
+  .glass {
+    @apply bg-glass backdrop-blur-xl border border-glass-border rounded-2xl;
+  }
+
+  .premium-gradient {
+    background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    @apply relative overflow-hidden;
+  }
+
+  .premium-gradient::after {
+    content: "";
+    @apply absolute inset-0 opacity-0 transition-opacity duration-500;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 100%);
+  }
+
+  .premium-gradient:hover::after {
+    @apply opacity-100;
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-br;
+    background-image: linear-gradient(to bottom right, var(--text-gradient-from), var(--text-gradient-to));
+  }
+
+  .hover-glow {
+    @apply transition-all duration-300;
+  }
+
+  .hover-glow:hover {
+    @apply shadow-[0_0_30px_rgba(99,102,241,0.3)] border-accent/30;
+  }
+  
+  .card-hover {
+    @apply transition-all duration-300 hover:-translate-y-1 hover:border-accent/30;
+    &:hover {
+      background-color: var(--card-hover-bg);
+    }
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  @apply bg-background;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-zinc-800 rounded-full hover:bg-zinc-700 transition-colors;
+}
+
+/* Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Tiptap Light Editor Styles */
+.editor-light .tiptap {
+  color: #18181b !important;
+}
+
+.editor-light .tiptap p {
+  color: #18181b !important;
+}
+
+.editor-light .tiptap h1,
+.editor-light .tiptap h2,
+.editor-light .tiptap h3 {
+  color: #000000 !important;
+}
+
+.editor-light .tiptap ul li,
+.editor-light .tiptap ol li {
+  color: #27272a !important;
+}
+
+.editor-light .tiptap .is-editor-empty::before {
+  color: #a1a1aa !important;
+}
