@@ -182,6 +182,27 @@ export default function Navbar() {
                     {link.name}
                   </Link>
                 ))}
+                
+                {/* Mobile Model Switcher */}
+                <div className="mt-4 p-4 rounded-2xl bg-zinc-100 dark:bg-white/5 border border-zinc-200 dark:border-white/10 space-y-3">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2">
+                    Mô hình AI
+                  </p>
+                  <div className="flex bg-white/50 dark:bg-black/20 rounded-full p-1 border border-zinc-200 dark:border-white/10">
+                    <button
+                      onClick={() => { setModel('flash'); localStorage.setItem('lexiai_model', 'flash'); window.dispatchEvent(new Event('storage')); }}
+                      className={`flex-1 py-2.5 rounded-full text-[10px] font-bold transition-all ${model === 'flash' ? 'premium-gradient text-white shadow-lg' : 'text-zinc-500 dark:text-zinc-400'}`}
+                    >
+                      ⚡ NHANH (FLASH)
+                    </button>
+                    <button
+                      onClick={() => { setModel('pro'); localStorage.setItem('lexiai_model', 'pro'); window.dispatchEvent(new Event('storage')); }}
+                      className={`flex-1 py-2.5 rounded-full text-[10px] font-bold transition-all ${model === 'pro' ? 'premium-gradient text-white shadow-lg' : 'text-zinc-500 dark:text-zinc-400'}`}
+                    >
+                      🎯 CHẤT LƯỢNG (PRO)
+                    </button>
+                  </div>
+                </div>
               </div>
             </motion.div>
           )}

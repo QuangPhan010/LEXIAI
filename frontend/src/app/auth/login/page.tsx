@@ -61,7 +61,7 @@ export default function LoginPage() {
               <User className="absolute left-3 top-3.5 text-muted-foreground" size={18} />
               <input
                 type="text"
-                placeholder="Tên đăng nhập"
+                placeholder="Tên đăng nhập hoặc Email"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
