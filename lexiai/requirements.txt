@@ -4,3 +4,8 @@ django-cors-headers
 pdfminer.six
 docx2txt
 djangorestframework-simplejwt
+gunicorn
+whitenoise
+dj-database-url
+psycopg2-binary
+python-dotenv
