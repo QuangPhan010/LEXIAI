@@ -86,9 +86,10 @@ function MockInterviewContent() {
       return;
     }
 
+    const modelType = localStorage.getItem('lexiai_model') || 'flash';
     try {
       const genAI = new GoogleGenerativeAI(apiKey);
-      const modelName = await resolveGeminiModel(apiKey, 'pro');
+      const modelName = await resolveGeminiModel(apiKey, modelType as any);
       const model = genAI.getGenerativeModel({ 
         model: modelName,
         generationConfig: { maxOutputTokens: 500 }
@@ -148,9 +149,10 @@ function MockInterviewContent() {
 
     const apiKey = localStorage.getItem('gemini_api_key');
 
+    const modelType = localStorage.getItem('lexiai_model') || 'flash';
     try {
       const genAI = new GoogleGenerativeAI(apiKey!);
-      const modelName = await resolveGeminiModel(apiKey!, 'pro');
+      const modelName = await resolveGeminiModel(apiKey!, modelType as any);
       const model = genAI.getGenerativeModel({ 
         model: modelName,
         generationConfig: { maxOutputTokens: 500 }
@@ -222,9 +224,10 @@ function MockInterviewContent() {
 
     setLoading(true);
     const apiKey = localStorage.getItem('gemini_api_key');
+    const modelType = localStorage.getItem('lexiai_model') || 'flash';
     try {
       const genAI = new GoogleGenerativeAI(apiKey!);
-      const modelName = await resolveGeminiModel(apiKey!, 'pro');
+      const modelName = await resolveGeminiModel(apiKey!, modelType as any);
       const model = genAI.getGenerativeModel({ 
         model: modelName,
         generationConfig: { maxOutputTokens: 800 } // Đánh giá cần dài hơn chút

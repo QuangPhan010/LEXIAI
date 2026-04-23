@@ -52,7 +52,7 @@ export default function WritingAssistant() {
 
   const handleGenerate = async () => {
     const apiKey = localStorage.getItem('gemini_api_key');
-    const modelType = localStorage.getItem('lexiai_model') || 'pro';
+    const modelType = localStorage.getItem('lexiai_model') || 'flash';
     
     if (!apiKey) {
       alert("Vui lòng cài đặt API Key trên thanh điều hướng trước.");

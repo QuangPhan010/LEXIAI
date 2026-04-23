@@ -209,7 +209,7 @@ function CVAnalyzerContent() {
       localStorage.setItem('last_jd', jd);
       setExtracting(false);
 
-      const modelType = localStorage.getItem('lexiai_model') || 'pro';
+      const modelType = localStorage.getItem('lexiai_model') || 'flash';
       const genAI = new GoogleGenerativeAI(apiKey);
       const modelName = await resolveGeminiModel(apiKey, modelType === 'pro' ? 'pro' : 'flash');
       const model = genAI.getGenerativeModel({ 

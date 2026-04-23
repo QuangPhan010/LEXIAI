@@ -11,7 +11,7 @@ import APIConfigModal from './APIConfigModal';
 
 export default function Navbar() {
   const [apiKey, setApiKey] = useState<string | null>(null);
-  const [model, setModel] = useState<'flash' | 'pro'>('pro');
+  const [model, setModel] = useState<'flash' | 'pro'>('flash');
   const [showModal, setShowModal] = useState(false);
   const pathname = usePathname();
   const [username, setUsername] = useState<string | null>(null);
