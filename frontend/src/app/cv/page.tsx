@@ -8,10 +8,15 @@ import { API_BASE_URL } from '@/lib/api';
 import { useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { resolveGeminiModel } from '@/lib/geminiModel';
-import { 
-  Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer 
-} from 'recharts';
 import CVEditor from '@/components/CVEditor';
+import dynamic from 'next/dynamic';
+
+const SkillChart = dynamic(() => import('@/components/SkillChart'), { 
+  ssr: false,
+  loading: () => <div className="w-full h-[320px] flex items-center justify-center">
+    <div className="w-8 h-8 border-4 border-t-accent border-white/10 rounded-full animate-spin" />
+  </div>
+});
 
 interface AnalysisResult {
   score: number;
@@ -411,33 +416,16 @@ function CVAnalyzerContent() {
                     <p className="text-sm text-muted-foreground">CV của bạn tốt hơn {result.score - 5}% ứng viên trong hệ thống.</p>
                   </div>
 
-                    <div className="glass p-6 min-h-[400px] w-full flex flex-col" style={{ minWidth: 0 }}>
-                      <h3 className="text-sm font-bold uppercase tracking-wider opacity-60 mb-4">Phân tích kỹ năng</h3>
-                      <div className="flex-1 w-full min-h-[300px]">
-                        {isMounted ? (
-                          <ResponsiveContainer width="100%" height="100%">
-                            <RadarChart cx="50%" cy="50%" outerRadius="70%" data={result.radarData}>
-                              <PolarGrid stroke="rgba(255,255,255,0.1)" />
-                              <PolarAngleAxis 
-                                dataKey="subject" 
-                                tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 600 }} 
-                              />
-                              <Radar 
-                                name="Kỹ năng" 
-                                dataKey="A" 
-                                stroke="#6366f1" 
-                                fill="#6366f1" 
-                                fillOpacity={0.6} 
-                              />
-                            </RadarChart>
-                          </ResponsiveContainer>
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <div className="w-8 h-8 border-4 border-t-accent border-white/10 rounded-full animate-spin" />
-                          </div>
-                        )}
+                      <div className="glass p-6 min-h-[400px] w-full flex flex-col" style={{ minWidth: 0 }}>
+                        <h3 className="text-sm font-bold uppercase tracking-wider opacity-60 mb-4">Phân tích kỹ năng</h3>
+                        <div className="flex-1 w-full flex items-center justify-center">
+                          {result.radarData && result.radarData.length > 0 ? (
+                            <SkillChart data={result.radarData} />
+                          ) : (
+                            <div className="text-muted-foreground text-sm italic">Đang cập nhật dữ liệu...</div>
+                          )}
+                        </div>
                       </div>
-                    </div>
 
                   {/* ATS Keywords Section */}
                   <div className="glass p-6 space-y-4">
