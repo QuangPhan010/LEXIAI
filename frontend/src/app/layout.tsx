@@ -33,18 +33,18 @@ export default function RootLayout({
     <html
       lang="vi"
       suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-background" suppressHydrationWarning>
+      <body className="min-h-screen flex flex-col bg-background" suppressHydrationWarning>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >
-          <div className="flex-1 pb-20 md:pb-0">
+          <main className="flex-grow">
             {children}
-          </div>
+          </main>
           <Footer />
         </ThemeProvider>
       </body>
