@@ -124,6 +124,11 @@ function CVAnalyzerContent() {
 
   useEffect(() => {
     setIsMounted(true);
+    const username = localStorage.getItem('username') || 'guest';
+    const savedResult = localStorage.getItem(`last_cv_result_${username}`);
+    if (savedResult) {
+      setResult(JSON.parse(savedResult));
+    }
     const historyId = searchParams.get('historyId');
     if (historyId) {
       loadHistory(historyId);
@@ -179,7 +184,8 @@ function CVAnalyzerContent() {
         };
         setResult(resultData);
         setExtractedText(data.extracted_text || '');
-        localStorage.setItem('last_cv_text', data.extracted_text || '');
+        const username = localStorage.getItem('username') || 'guest';
+        localStorage.setItem(`last_cv_text_${username}`, data.extracted_text || '');
       }
     } catch (error) {
       console.error("Lỗi tải lịch sử:", error);
@@ -189,6 +195,25 @@ function CVAnalyzerContent() {
   };
 
   const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
+
+  const saveToHistory = async (token: string, fileName: string, data: AnalysisResult, text: string) => {
+    try {
+      await fetch(`${API_BASE_URL}/history/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({
+          file_name: fileName,
+          score: Math.round(data.score || 0),
+          breakdown: data.breakdown,
+          issues: data.issues,
+          radar_data: data.radarData,
+          skill_gaps: data.skillGaps,
+          ats_keywords: data.atsKeywords,
+          extracted_text: text
+        })
+      });
+    } catch (e) { console.error("Lỗi lưu lịch sử:", e); }
+  };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -218,23 +243,32 @@ function CVAnalyzerContent() {
       if (!extractResponse.ok) throw new Error("Không thể trích xuất nội dung từ tệp.");
       const { text } = await extractResponse.json();
       
-      // Kiểm tra nếu CV và JD giống hệt lần trước
-      const lastText = localStorage.getItem('last_cv_text');
-      const lastJd = localStorage.getItem('last_jd');
-      const cachedResult = localStorage.getItem('last_cv_result');
+      const username = localStorage.getItem('username') || 'guest';
+      
+      // Kiểm tra nếu CV và JD giống hệt lần trước của USER NÀY
+      const lastText = localStorage.getItem(`last_cv_text_${username}`);
+      const lastJd = localStorage.getItem(`last_jd_${username}`);
+      const cachedResult = localStorage.getItem(`last_cv_result_${username}`);
 
       if (text === lastText && jd === lastJd && cachedResult) {
         console.log("Phát hiện CV và JD trùng lặp, sử dụng kết quả cũ.");
-        setResult(JSON.parse(cachedResult));
+        const data = JSON.parse(cachedResult);
+        setResult(data);
         setExtractedText(text);
         setExtracting(false);
         setLoading(false);
+        
+        // Vẫn lưu vào lịch sử cho user hiện tại nếu họ đang đăng nhập
+        const accessToken = localStorage.getItem('access_token');
+        if (accessToken) {
+          saveToHistory(accessToken, file.name, data, text);
+        }
         return;
       }
 
       setExtractedText(text);
-      localStorage.setItem('last_cv_text', text);
-      localStorage.setItem('last_jd', jd);
+      localStorage.setItem(`last_cv_text_${username}`, text);
+      localStorage.setItem(`last_jd_${username}`, jd);
       setExtracting(false);
 
       const modelType = localStorage.getItem('lexiai_model') || 'flash';
@@ -300,26 +334,11 @@ function CVAnalyzerContent() {
       }
       const data = parseAnalysisJson(aiResponseText);
       setResult(data);
-      localStorage.setItem('last_cv_result', JSON.stringify(data));
+      localStorage.setItem(`last_cv_result_${username}`, JSON.stringify(data));
 
       const accessToken = localStorage.getItem('access_token');
       if (accessToken) {
-        try {
-          await fetch(`${API_BASE_URL}/history/`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
-            body: JSON.stringify({
-              file_name: file.name,
-              score: Math.round(data.score || 0),
-              breakdown: data.breakdown,
-              issues: data.issues,
-              radar_data: data.radarData,
-              skill_gaps: data.skillGaps,
-              ats_keywords: data.atsKeywords,
-              extracted_text: text
-            })
-          });
-        } catch (e) { console.error("Lỗi lưu lịch sử:", e); }
+        await saveToHistory(accessToken, file.name, data, text);
       }
     } catch (error: any) {
       console.error(error);
@@ -335,6 +354,8 @@ function CVAnalyzerContent() {
     setAppliedIndex(index);
     setTimeout(() => setAppliedIndex(null), 2000);
   };
+
+  if (!isMounted) return null;
 
   return (
     <div className="bg-background text-foreground pt-32 pb-32 px-8">

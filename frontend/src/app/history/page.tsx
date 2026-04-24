@@ -18,8 +18,10 @@ export default function HistoryPage() {
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [type, setType] = useState<'cv' | 'interview'>('cv');
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    setIsMounted(true);
     fetchHistory();
   }, [type]);
 
@@ -36,6 +38,12 @@ export default function HistoryPage() {
       const res = await fetch(`${API_BASE_URL}/${endpoint}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
+      if (res.status === 401) {
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('username');
+        window.location.href = '/auth/login';
+        return;
+      }
       if (res.ok) {
         const data = await res.json();
         setHistory(data);
@@ -61,6 +69,8 @@ export default function HistoryPage() {
       console.error(error);
     }
   };
+
+  if (!isMounted) return null;
 
   return (
     <div className="min-h-screen bg-background text-foreground pt-32 pb-32 px-8">

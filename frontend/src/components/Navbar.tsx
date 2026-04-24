@@ -22,7 +22,12 @@ export default function Navbar() {
   useEffect(() => {
     setMounted(true);
     const savedUsername = localStorage.getItem('username');
-    setUsername(savedUsername);
+    const token = localStorage.getItem('access_token');
+    if (savedUsername && token) {
+      setUsername(savedUsername);
+    } else {
+      setUsername(null);
+    }
     
     const savedKey = localStorage.getItem('gemini_api_key');
     const savedModel = localStorage.getItem('lexiai_model') as 'flash' | 'pro';

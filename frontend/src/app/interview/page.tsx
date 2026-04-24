@@ -27,8 +27,14 @@ function MockInterviewContent() {
   const [showEvaluation, setShowEvaluation] = useState(false);
   const [isHistory, setIsHistory] = useState(false);
   const [language, setLanguage] = useState<'vi' | 'en' | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const searchParams = useSearchParams();
+  const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
     const historyId = searchParams.get('historyId');
@@ -119,14 +125,30 @@ function MockInterviewContent() {
 
       setInitialPrompt(prompt);
       
-      const result = await model.generateContentStream(prompt);
+      let result;
+      let retries = 0;
+      const maxRetries = 3;
+      while (retries < maxRetries) {
+        try {
+          result = await model.generateContentStream(prompt);
+          break;
+        } catch (err: any) {
+          retries++;
+          if (retries < maxRetries && (err.message?.includes('503') || err.message?.includes('high demand'))) {
+            await delay(Math.pow(2, retries) * 1000);
+          } else { throw err; }
+        }
+      }
+
       let fullText = "";
       setMessages([{ role: 'assistant', content: "" }]);
       
-      for await (const chunk of result.stream) {
-        const chunkText = chunk.text();
-        fullText += chunkText;
-        setMessages([{ role: 'assistant', content: fullText }]);
+      if (result) {
+        for await (const chunk of result.stream) {
+          const chunkText = chunk.text();
+          fullText += chunkText;
+          setMessages([{ role: 'assistant', content: fullText }]);
+        }
       }
 
     } catch (error) {
@@ -140,10 +162,11 @@ function MockInterviewContent() {
   const handleSend = async () => {
     if (!input || loading) return;
 
+    const currentMessages = [...messages];
     const userMessage = input;
     setInput('');
     setHint(null);
-    const newMessages: Message[] = [...messages, { role: 'user', content: userMessage }];
+    const newMessages: Message[] = [...currentMessages, { role: 'user', content: userMessage }];
     setMessages(newMessages);
     setLoading(true);
 
@@ -161,25 +184,41 @@ function MockInterviewContent() {
       const chat = model.startChat({
         history: [
           { role: 'user', parts: [{ text: initialPrompt }] },
-          ...messages.map(m => ({
+          ...currentMessages.map(m => ({
             role: m.role === 'user' ? 'user' : 'model',
             parts: [{ text: m.content }],
           })),
         ],
       });
 
-      const result = await chat.sendMessageStream(userMessage);
+      let result;
+      let retries = 0;
+      const maxRetries = 3;
+      while (retries < maxRetries) {
+        try {
+          result = await chat.sendMessageStream(userMessage);
+          break;
+        } catch (err: any) {
+          retries++;
+          if (retries < maxRetries && (err.message?.includes('503') || err.message?.includes('high demand'))) {
+            await delay(Math.pow(2, retries) * 1000);
+          } else { throw err; }
+        }
+      }
+
       let fullText = "";
       setMessages(prev => [...prev, { role: 'assistant', content: "" }]);
 
-      for await (const chunk of result.stream) {
-        const chunkText = chunk.text();
-        fullText += chunkText;
-        setMessages(prev => {
-          const updated = [...prev];
-          updated[updated.length - 1].content = fullText;
-          return updated;
-        });
+      if (result) {
+        for await (const chunk of result.stream) {
+          const chunkText = chunk.text();
+          fullText += chunkText;
+          setMessages(prev => {
+            const updated = [...prev];
+            updated[updated.length - 1].content = fullText;
+            return updated;
+          });
+        }
       }
 
     } catch (error) {
@@ -207,8 +246,23 @@ function MockInterviewContent() {
         ? `Câu hỏi phỏng vấn là: "${lastQuestion}". Hãy đưa ra một gợi ý ngắn gọn (khoảng 2-3 ý) về cách trả lời tốt nhất cho câu hỏi này dựa trên CV của ứng viên. Chỉ trả về nội dung gợi ý bằng tiếng Việt.`
         : `The interview question is: "${lastQuestion}". Provide a concise hint (2-3 bullet points) on how to best answer this question based on the candidate's CV. Return ONLY the hint in English.`;
 
-      const result = await model.generateContent(prompt);
-      setHint(result.response.text());
+      let result;
+      let retries = 0;
+      const maxRetries = 3;
+      while (retries < maxRetries) {
+        try {
+          result = await model.generateContent(prompt);
+          break;
+        } catch (err: any) {
+          retries++;
+          if (retries < maxRetries && (err.message?.includes('503') || err.message?.includes('high demand'))) {
+            await delay(Math.pow(2, retries) * 1000);
+          } else { throw err; }
+        }
+      }
+      if (result) {
+        setHint(result.response.text());
+      }
     } catch (error) {
       console.error("Lỗi lấy gợi ý:", error);
     } finally {
@@ -233,46 +287,74 @@ function MockInterviewContent() {
         generationConfig: { } // Đánh giá cần dài hơn chút
       });
 
-      const chat = model.startChat({
-        history: [
-          { role: 'user', parts: [{ text: initialPrompt }] },
-          ...messages.map(m => ({
-            role: m.role === 'user' ? 'user' : 'model',
-            parts: [{ text: m.content }],
-          })),
-        ],
-      });
-
-      const evalPrompt = language === 'vi'
-        ? "Buổi phỏng vấn đã kết thúc. Hãy đưa ra nhận xét chi tiết và khách quan về phần thể hiện của ứng viên qua các câu trả lời vừa rồi. " +
-          "Hãy chia nhỏ thành các mục: 1. Điểm mạnh, 2. Điểm cần cải thiện, 3. Lời khuyên & Tài liệu tham khảo. " +
-          "Văn phong chuyên nghiệp, khích lệ. Chỉ trả về nội dung nhận xét bằng tiếng Việt."
-        : "The interview has ended. Please provide a detailed and objective evaluation of the candidate's performance based on the answers provided. " +
-          "Break it down into: 1. Strengths, 2. Areas for Improvement, 3. Advice & Reference Materials. " +
-          "Keep the tone professional and encouraging. Return ONLY the evaluation content in English.";
+      const transcript = messages.map(m => `${m.role === 'user' ? 'Ứng viên' : 'Người phỏng vấn'}: ${m.content}`).join('\n\n');
       
-      const result = await chat.sendMessage(evalPrompt);
-      const response = await result.response;
-      const evaluationText = response.text();
-      setEvaluation(evaluationText);
-      setShowEvaluation(true);
+      const evalPrompt = language === 'vi'
+        ? `Dựa trên nội dung buổi phỏng vấn sau đây, hãy đưa ra nhận xét chi tiết và khách quan về phần thể hiện của ứng viên.
+          
+          TRANSCRIPT BUỔI PHỎNG VẤN:
+          ${transcript}
 
-      const token = localStorage.getItem('access_token');
-      if (token) {
+          Hãy chia nhỏ thành các mục: 1. Điểm mạnh, 2. Điểm cần cải thiện, 3. Lời khuyên & Tài liệu tham khảo. 
+          Văn phong chuyên nghiệp, khích lệ. Chỉ trả về nội dung nhận xét bằng tiếng Việt.`
+        : `Based on the following interview transcript, please provide a detailed and objective evaluation of the candidate's performance.
+          
+          INTERVIEW TRANSCRIPT:
+          ${transcript}
+
+          Break it down into: 1. Strengths, 2. Areas for Improvement, 3. Advice & Reference Materials. 
+          Keep the tone professional and encouraging. Return ONLY the evaluation content in English.`;
+      
+      let result;
+      let retries = 0;
+      const maxRetries = 3;
+      while (retries < maxRetries) {
         try {
-          await fetch(`${API_BASE_URL}/interviews/`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({
-              messages: [...messages],
-              evaluation: evaluationText
-            })
-          });
-        } catch (e) {
-          console.error("Lỗi lưu lịch sử phỏng vấn:", e);
+          result = await model.generateContent([initialPrompt, evalPrompt]);
+          break;
+        } catch (err: any) {
+          retries++;
+          if (retries < maxRetries && (err.message?.includes('503') || err.message?.includes('high demand'))) {
+            await delay(Math.pow(2, retries) * 1000);
+          } else { throw err; }
+        }
+      }
+      
+      if (result) {
+        const response = await result.response;
+        const evaluationText = response.text();
+        setEvaluation(evaluationText);
+        setShowEvaluation(true);
+
+        const token = localStorage.getItem('access_token');
+        if (token) {
+          try {
+            const res = await fetch(`${API_BASE_URL}/interviews/`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify({
+                messages: [...messages],
+                evaluation: evaluationText
+              })
+            });
+            if (res.status === 401) {
+              localStorage.removeItem('access_token');
+              localStorage.removeItem('username');
+              window.location.href = '/auth/login';
+              return;
+            }
+            if (!res.ok) {
+              const errorData = await res.json();
+              console.error("Lỗi khi lưu lịch sử phỏng vấn:", res.status, errorData);
+            } else {
+              console.log("Lưu lịch sử phỏng vấn thành công");
+            }
+          } catch (e) {
+            console.error("Lỗi kết nối khi lưu lịch sử phỏng vấn:", e);
+          }
         }
       }
     } catch (error) {
@@ -294,6 +376,8 @@ function MockInterviewContent() {
     setHint(null);
   };
 
+  if (!isMounted) return null;
+
   return (
     <div className="bg-background text-foreground pt-32 pb-32 px-8">
       <Navbar />
@@ -307,15 +391,15 @@ function MockInterviewContent() {
             <div className="flex gap-4">
               <button 
                 onClick={() => startInterview('vi')}
-                className="px-6 py-3 bg-white/5 border border-white/10 rounded-xl font-bold hover:bg-white/10 transition-all flex items-center gap-2"
+                className="px-6 py-3 bg-muted/50 border border-border rounded-xl font-bold hover:bg-muted transition-all flex items-center gap-2"
               >
-                🇻🇳 Tiếng Việt
+                <span className="text-xl">🇻🇳</span> Tiếng Việt
               </button>
               <button 
                 onClick={() => startInterview('en')}
                 className="px-6 py-3 premium-gradient rounded-xl font-bold shadow-lg hover-glow transition-all flex items-center gap-2"
               >
-                🇺🇸 English
+                <span className="text-xl">🇺🇸</span> English
               </button>
             </div>
           ) : isHistory ? (
@@ -328,7 +412,7 @@ function MockInterviewContent() {
               </button>
               <button 
                 onClick={restartInterview}
-                className="px-6 py-3 bg-white/5 border border-white/10 text-zinc-400 rounded-xl font-bold hover:bg-white/10 transition-all"
+                className="px-6 py-3 bg-muted/50 border border-border text-muted-foreground rounded-xl font-bold hover:bg-muted transition-all"
               >
                 Phỏng vấn mới
               </button>
@@ -345,7 +429,7 @@ function MockInterviewContent() {
         </header>
 
         {isStarted ? (
-          <div className="flex-1 glass border-white/10 flex flex-col overflow-hidden">
+          <div className="flex-1 glass border-border flex flex-col overflow-hidden">
             {/* Chat Area */}
             <div 
               ref={scrollRef}
@@ -361,14 +445,14 @@ function MockInterviewContent() {
                   >
                     <div className={`flex gap-3 max-w-[80%] ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
-                        msg.role === 'user' ? 'bg-accent/20 text-accent' : 'bg-white/10 text-zinc-400'
+                        msg.role === 'user' ? 'bg-accent/20 text-accent' : 'bg-muted text-muted-foreground'
                       }`}>
                         {msg.role === 'user' ? <User size={16} /> : <Bot size={16} />}
                       </div>
                       <div className={`p-4 rounded-2xl text-sm leading-relaxed ${
                         msg.role === 'user' 
                         ? 'bg-accent text-white shadow-lg' 
-                        : 'bg-white/5 border border-white/10 text-zinc-100'
+                        : 'bg-muted/30 border border-border text-foreground'
                       }`}>
                         {msg.content || (loading && idx === messages.length - 1 ? <RefreshCw size={14} className="animate-spin" /> : '')}
                       </div>
@@ -386,14 +470,14 @@ function MockInterviewContent() {
                   <Lightbulb className="text-yellow-500 shrink-0" size={18} />
                   <div className="space-y-1">
                     <p className="text-xs font-bold uppercase tracking-widest text-yellow-500">Gợi ý từ AI</p>
-                    <p className="text-sm text-zinc-300 leading-relaxed italic">{hint}</p>
+                    <p className="text-sm text-muted-foreground leading-relaxed italic">{hint}</p>
                   </div>
                 </motion.div>
               )}
 
               {loading && messages[messages.length-1]?.role === 'user' && (
                 <div className="flex justify-start">
-                  <div className="bg-white/5 border border-white/10 p-4 rounded-2xl flex items-center gap-2">
+                  <div className="bg-muted/50 border border-border p-4 rounded-2xl flex items-center gap-2">
                     <RefreshCw size={16} className="animate-spin text-accent" />
                     <span className="text-xs text-muted-foreground italic">AI đang suy nghĩ...</span>
                   </div>
@@ -403,7 +487,7 @@ function MockInterviewContent() {
 
             {/* Input Area */}
             {!isHistory ? (
-              <div className="p-4 bg-white/5 border-t border-white/10 space-y-4">
+              <div className="p-4 bg-muted/20 border-t border-border space-y-4">
                 <div className="flex gap-2">
                   <div className="relative flex-1">
                     <input
@@ -412,7 +496,7 @@ function MockInterviewContent() {
                       onChange={(e) => setInput(e.target.value)}
                       onKeyPress={(e) => e.key === 'Enter' && handleSend()}
                       placeholder="Nhập câu trả lời của bạn..."
-                      className="w-full bg-zinc-900/50 border border-white/10 rounded-xl py-4 pl-4 pr-12 focus:outline-none focus:ring-1 focus:ring-accent transition-all text-sm"
+                      className="w-full bg-input border border-border rounded-xl py-4 pl-4 pr-12 focus:outline-none focus:ring-1 focus:ring-accent transition-all text-sm text-foreground"
                     />
                     <button
                       onClick={handleSend}
@@ -426,14 +510,14 @@ function MockInterviewContent() {
                     onClick={handleGetHint}
                     disabled={loading || hintLoading || messages.length === 0}
                     title="Nhận gợi ý trả lời"
-                    className="p-4 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all text-yellow-500 disabled:opacity-50"
+                    className="p-4 bg-muted/50 border border-border rounded-xl hover:bg-muted transition-all text-yellow-500 disabled:opacity-50"
                   >
                     {hintLoading ? <RefreshCw size={20} className="animate-spin" /> : <Lightbulb size={20} />}
                   </button>
                 </div>
               </div>
             ) : (
-              <div className="p-6 bg-white/5 border-t border-white/10 text-center text-zinc-500 text-sm italic">
+              <div className="p-6 bg-muted/20 border-t border-border text-center text-muted-foreground text-sm italic">
                 Đây là nội dung lưu trữ từ buổi phỏng vấn trước.
               </div>
             )}
@@ -455,7 +539,7 @@ function MockInterviewContent() {
                 value={jd}
                 onChange={(e) => setJd(e.target.value)}
                 placeholder="Dán JD hoặc yêu cầu công việc tại đây..."
-                className="flex-1 bg-zinc-900/50 border border-white/10 rounded-xl p-4 text-sm focus:outline-none focus:ring-1 focus:ring-accent transition-all resize-none"
+                className="flex-1 bg-input border border-border rounded-xl p-4 text-sm focus:outline-none focus:ring-1 focus:ring-accent transition-all resize-none text-foreground"
               />
             </div>
 
@@ -471,7 +555,7 @@ function MockInterviewContent() {
               <div className="flex flex-col w-full gap-4">
                 <button 
                   onClick={() => startInterview('vi')}
-                  className="w-full py-4 bg-white/5 border border-white/10 rounded-xl font-bold hover:bg-white/10 transition-all flex items-center justify-center gap-3 group"
+                  className="w-full py-4 bg-muted/50 border border-border rounded-xl font-bold hover:bg-muted transition-all flex items-center justify-center gap-3 group"
                 >
                   <span className="text-2xl">🇻🇳</span>
                   Tiếng Việt
@@ -502,7 +586,7 @@ function MockInterviewContent() {
             <motion.div 
               initial={{ scale: 0.9, y: 20 }}
               animate={{ scale: 1, y: 0 }}
-              className="bg-zinc-900 border border-white/10 w-full max-w-2xl max-h-[80vh] rounded-3xl overflow-hidden flex flex-col shadow-2xl"
+              className="bg-background border border-border w-full max-w-2xl max-h-[80vh] rounded-3xl overflow-hidden flex flex-col shadow-2xl"
             >
               <div className="p-8 border-b border-white/5 premium-gradient">
                 <div className="flex items-center gap-3 mb-2">
@@ -514,16 +598,16 @@ function MockInterviewContent() {
                 <p className="text-white/70 text-sm">Phân tích chi tiết từ AI dựa trên các câu trả lời của bạn.</p>
               </div>
               
-              <div className="flex-1 overflow-y-auto p-8 custom-scrollbar text-zinc-100 prose prose-invert max-w-none">
+              <div className="flex-1 overflow-y-auto p-8 custom-scrollbar text-foreground prose dark:prose-invert max-w-none">
                 <div className="whitespace-pre-wrap leading-relaxed">
                   {evaluation}
                 </div>
               </div>
 
-              <div className="p-6 bg-white/5 flex gap-4">
+              <div className="p-6 bg-muted/50 flex gap-4">
                 <button 
                   onClick={restartInterview}
-                  className="flex-1 py-4 bg-white/10 hover:bg-white/20 rounded-xl font-bold transition-all"
+                  className="flex-1 py-4 bg-muted hover:bg-muted/80 rounded-xl font-bold transition-all"
                 >
                   Phỏng vấn mới
                 </button>
