@@ -215,7 +215,6 @@ function CVAnalyzerContent() {
       const model = genAI.getGenerativeModel({ 
         model: modelName,
         generationConfig: { 
-          maxOutputTokens: 2000, 
           responseMimeType: 'application/json' 
         }
       });

@@ -28,11 +28,11 @@ export default function CareerRoadmapPage() {
 
     setLoading(true);
     try {
+      const modelType = localStorage.getItem('lexiai_model') || 'flash';
       const genAI = new GoogleGenerativeAI(apiKey);
-      const modelName = await resolveGeminiModel(apiKey, 'pro');
+      const modelName = await resolveGeminiModel(apiKey, modelType === 'pro' ? 'pro' : 'flash');
       const model = genAI.getGenerativeModel({ 
         model: modelName,
-        generationConfig: { maxOutputTokens: 800 }
       });
 
       const prompt = `

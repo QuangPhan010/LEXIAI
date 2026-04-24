@@ -65,7 +65,7 @@ export default function WritingAssistant() {
       const modelName = await resolveGeminiModel(apiKey, modelType === 'pro' ? 'pro' : 'flash');
       const model = genAI.getGenerativeModel({ 
         model: modelName,
-        generationConfig: { maxOutputTokens: 500 }
+        generationConfig: { }
       });
       
       const fullPrompt = `${activeTemplate.prompt}${input}\n\nYêu cầu phong cách: Sử dụng tông giọng ${activeTone.name} (${activeTone.description}).\nYêu cầu ngôn ngữ: Chỉ trả về tiếng Việt, không dùng tiếng Anh trừ từ viết tắt chuyên ngành bắt buộc.`;

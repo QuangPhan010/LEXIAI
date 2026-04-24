@@ -42,7 +42,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="flex-1">
+          <div className="flex-1 pb-20 md:pb-0">
             {children}
           </div>
           <Footer />

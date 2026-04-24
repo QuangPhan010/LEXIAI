@@ -92,7 +92,7 @@ function MockInterviewContent() {
       const modelName = await resolveGeminiModel(apiKey, modelType as any);
       const model = genAI.getGenerativeModel({ 
         model: modelName,
-        generationConfig: { maxOutputTokens: 500 }
+        generationConfig: { }
       });
 
       const prompt = selectedLang === 'vi' 
@@ -155,7 +155,7 @@ function MockInterviewContent() {
       const modelName = await resolveGeminiModel(apiKey!, modelType as any);
       const model = genAI.getGenerativeModel({ 
         model: modelName,
-        generationConfig: { maxOutputTokens: 500 }
+        generationConfig: { }
       });
 
       const chat = model.startChat({
@@ -199,7 +199,7 @@ function MockInterviewContent() {
       const modelName = await resolveGeminiModel(apiKey!, 'flash');
       const model = genAI.getGenerativeModel({ 
         model: modelName,
-        generationConfig: { maxOutputTokens: 200 } // Hint chỉ cần ngắn
+        generationConfig: { } // Hint chỉ cần ngắn
       });
 
       const lastQuestion = messages[messages.length - 1].content;
@@ -230,7 +230,7 @@ function MockInterviewContent() {
       const modelName = await resolveGeminiModel(apiKey!, modelType as any);
       const model = genAI.getGenerativeModel({ 
         model: modelName,
-        generationConfig: { maxOutputTokens: 800 } // Đánh giá cần dài hơn chút
+        generationConfig: { } // Đánh giá cần dài hơn chút
       });
 
       const chat = model.startChat({

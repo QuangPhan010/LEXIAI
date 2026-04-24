@@ -72,7 +72,6 @@ export default function JobMatcherPage() {
       const model = genAI.getGenerativeModel({ 
         model: modelName,
         generationConfig: { 
-          maxOutputTokens: 500,
           responseMimeType: 'application/json' 
         }
       });
