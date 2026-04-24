@@ -70,11 +70,23 @@ function parseAnalysisJson(rawText: string): AnalysisResult {
 
   // Chuẩn hóa dữ liệu để đảm bảo luôn có các trường cần thiết (hỗ trợ cả camelCase và snake_case từ AI)
   const radarDataRaw = data.radarData || data.radar_data || [];
-  const radarData = Array.isArray(radarDataRaw) ? radarDataRaw.map((item: any) => ({
+  let radarData = Array.isArray(radarDataRaw) ? radarDataRaw.map((item: any) => ({
     subject: item.subject || item.label || item.name || "Kỹ năng",
     A: item.A || item.value || item.score || 0,
     fullMark: item.fullMark || 100
   })) : [];
+
+  // Nếu không có dữ liệu radar, tạo dữ liệu giả lập dựa trên điểm số để tránh biểu đồ trống
+  if (radarData.length === 0) {
+    const baseScore = data.score || 50;
+    radarData = [
+      { subject: 'Chuyên môn', A: baseScore, fullMark: 100 },
+      { subject: 'Kỹ năng mềm', A: Math.max(0, baseScore - 10), fullMark: 100 },
+      { subject: 'Kinh nghiệm', A: Math.max(0, baseScore - 5), fullMark: 100 },
+      { subject: 'Trình bày', A: Math.min(100, baseScore + 10), fullMark: 100 },
+      { subject: 'Độ phù hợp', A: baseScore, fullMark: 100 },
+    ];
+  }
 
   const skillGapsRaw = data.skillGaps || data.skill_gaps || [];
   const skillGaps = Array.isArray(skillGapsRaw) ? skillGapsRaw.map((item: any) => ({
@@ -125,11 +137,22 @@ function CVAnalyzerContent() {
       if (res.ok) {
         const data = await res.json();
         const radarDataRaw = data.radar_data || data.radarData || [];
-        const radarData = Array.isArray(radarDataRaw) ? radarDataRaw.map((item: any) => ({
+        let radarData = Array.isArray(radarDataRaw) ? radarDataRaw.map((item: any) => ({
           subject: item.subject || item.label || item.name || "Kỹ năng",
           A: item.A || item.value || item.score || 0,
           fullMark: item.fullMark || 100
         })) : [];
+
+        if (radarData.length === 0) {
+          const baseScore = data.score || 50;
+          radarData = [
+            { subject: 'Chuyên môn', A: baseScore, fullMark: 100 },
+            { subject: 'Kỹ năng mềm', A: Math.max(0, baseScore - 10), fullMark: 100 },
+            { subject: 'Kinh nghiệm', A: Math.max(0, baseScore - 5), fullMark: 100 },
+            { subject: 'Trình bày', A: Math.min(100, baseScore + 10), fullMark: 100 },
+            { subject: 'Độ phù hợp', A: baseScore, fullMark: 100 },
+          ];
+        }
 
         const skillGapsRaw = data.skill_gaps || data.skillGaps || [];
         const skillGaps = Array.isArray(skillGapsRaw) ? skillGapsRaw.map((item: any) => ({
@@ -393,10 +416,19 @@ function CVAnalyzerContent() {
                       <div className="flex-1 w-full min-h-[300px]">
                         {isMounted ? (
                           <ResponsiveContainer width="100%" height="100%">
-                            <RadarChart cx="50%" cy="50%" outerRadius="80%" data={result.radarData}>
-                              <PolarGrid stroke="currentColor" className="text-black/10 dark:text-white/10" />
-                              <PolarAngleAxis dataKey="subject" tick={{ fill: 'currentColor', fontSize: 10, className: 'text-muted-foreground' }} />
-                              <Radar name="Kỹ năng" dataKey="A" stroke="#6366f1" fill="#6366f1" fillOpacity={0.5} />
+                            <RadarChart cx="50%" cy="50%" outerRadius="70%" data={result.radarData}>
+                              <PolarGrid stroke="rgba(255,255,255,0.1)" />
+                              <PolarAngleAxis 
+                                dataKey="subject" 
+                                tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 600 }} 
+                              />
+                              <Radar 
+                                name="Kỹ năng" 
+                                dataKey="A" 
+                                stroke="#6366f1" 
+                                fill="#6366f1" 
+                                fillOpacity={0.6} 
+                              />
                             </RadarChart>
                           </ResponsiveContainer>
                         ) : (
