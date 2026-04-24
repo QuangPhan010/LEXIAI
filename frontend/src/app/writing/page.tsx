@@ -153,7 +153,7 @@ export default function WritingAssistant() {
           </div>
 
           {/* Main Input/Output Area */}
-          <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-6 h-[600px]">
+          <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-6 min-h-[600px]">
             {/* Input */}
             <div className="glass p-6 space-y-4 flex flex-col">
               <div className="flex items-center justify-between">
