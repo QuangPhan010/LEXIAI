@@ -19,7 +19,13 @@ export default function SkillChart({ data }: SkillChartProps) {
   return (
     <div className="w-full h-[320px] flex items-center justify-center">
       <ResponsiveContainer width="100%" height="100%">
-        <RadarChart cx="50%" cy="50%" outerRadius="70%" data={data}>
+        <RadarChart 
+          cx="50%" 
+          cy="50%" 
+          outerRadius="60%" 
+          data={data}
+          margin={{ top: 20, right: 30, bottom: 20, left: 30 }}
+        >
           <PolarGrid stroke="rgba(255,255,255,0.1)" />
           <PolarAngleAxis 
             dataKey="subject" 
