@@ -41,7 +41,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="relative mt-auto border-t border-black/10 dark:border-white/10 bg-muted/30 backdrop-blur-sm shadow-[0_-1px_0_rgba(0,0,0,0.05)] dark:shadow-[0_-1px_0_rgba(255,255,255,0.05)]">
+    <footer className="mt-auto border-t border-black/10 dark:border-white/10 bg-background/95 backdrop-blur-md shadow-[0_-1px_0_rgba(0,0,0,0.05)] dark:shadow-[0_-1px_0_rgba(255,255,255,0.05)]">
       <div className="absolute inset-0 bg-gradient-to-b from-transparent to-accent/5 pointer-events-none" />
       
       <div className="max-w-7xl mx-auto px-6 pt-16 pb-8 relative">

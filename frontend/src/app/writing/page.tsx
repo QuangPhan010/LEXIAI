@@ -92,7 +92,7 @@ export default function WritingAssistant() {
   };
 
   return (
-    <div className="bg-background text-foreground pt-28 md:pt-32 pb-24 px-5 md:px-8">
+    <div className="bg-background text-foreground pt-28 md:pt-32 pb-32 px-5 md:px-8">
       <Navbar />
 
       <main className="max-w-6xl mx-auto space-y-8">

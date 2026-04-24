@@ -107,7 +107,7 @@ export default function JobMatcherPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground pt-32 pb-24 px-8">
+    <div className="min-h-screen bg-background text-foreground pt-32 pb-32 px-8">
       <Navbar />
       <main className="max-w-6xl mx-auto space-y-12">
         <header className="space-y-4">

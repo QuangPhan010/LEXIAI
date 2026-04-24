@@ -63,7 +63,7 @@ export default function HistoryPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground pt-32 pb-24 px-8">
+    <div className="min-h-screen bg-background text-foreground pt-32 pb-32 px-8">
       <Navbar />
       <main className="max-w-4xl mx-auto space-y-8">
         <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
