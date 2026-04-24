@@ -295,7 +295,7 @@ function MockInterviewContent() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground pt-32 pb-24 px-8">
+    <div className="bg-background text-foreground pt-32 pb-24 px-8">
       <Navbar />
       <main className="max-w-4xl mx-auto h-[calc(100vh-200px)] flex flex-col space-y-6">
         <header className="flex items-center justify-between">

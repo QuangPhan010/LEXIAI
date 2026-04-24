@@ -62,7 +62,7 @@ export default function CareerRoadmapPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground pt-32 pb-24 px-8">
+    <div className="bg-background text-foreground pt-32 pb-24 px-8">
       <Navbar />
       <main className="max-w-5xl mx-auto space-y-12">
         <header className="flex flex-col items-center text-center space-y-4">
