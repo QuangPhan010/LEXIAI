@@ -54,7 +54,8 @@ export default function JobMatcherPage() {
   const [loading, setLoading] = useState(false);
 
   const checkMatch = async (job: Job) => {
-    const cvText = localStorage.getItem('last_cv_text');
+    const username = localStorage.getItem('username') || 'guest';
+    const cvText = localStorage.getItem(`last_cv_text_${username}`);
     const apiKey = localStorage.getItem('gemini_api_key');
 
     if (!cvText || !apiKey) {

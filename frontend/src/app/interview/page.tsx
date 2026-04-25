@@ -76,7 +76,8 @@ function MockInterviewContent() {
   }, [messages]);
 
   const startInterview = async (selectedLang: 'vi' | 'en') => {
-    const cvText = localStorage.getItem('last_cv_text');
+    const username = localStorage.getItem('username') || 'guest';
+    const cvText = localStorage.getItem(`last_cv_text_${username}`);
     if (!cvText) {
       alert("Vui lòng tải lên và phân tích CV trước khi bắt đầu phỏng vấn.");
       return;

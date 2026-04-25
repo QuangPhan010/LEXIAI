@@ -13,12 +13,14 @@ export default function CareerRoadmapPage() {
   const [targetRole, setTargetRole] = useState('');
   
   useEffect(() => {
-    const savedRoadmap = localStorage.getItem('last_roadmap');
+    const username = localStorage.getItem('username') || 'guest';
+    const savedRoadmap = localStorage.getItem(`last_roadmap_${username}`);
     if (savedRoadmap) setRoadmapText(savedRoadmap);
   }, []);
 
   const generateRoadmap = async () => {
-    const cvText = localStorage.getItem('last_cv_text');
+    const username = localStorage.getItem('username') || 'guest';
+    const cvText = localStorage.getItem(`last_cv_text_${username}`);
     const apiKey = localStorage.getItem('gemini_api_key');
     
     if (!cvText || !apiKey) {
@@ -52,7 +54,7 @@ export default function CareerRoadmapPage() {
       const result = await model.generateContent(prompt);
       const text = result.response.text();
       setRoadmapText(text);
-      localStorage.setItem('last_roadmap', text);
+      localStorage.setItem(`last_roadmap_${username}`, text);
     } catch (error: any) {
       console.error(error);
       alert(`Lỗi: ${error.message}`);

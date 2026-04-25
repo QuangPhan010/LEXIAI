@@ -11,7 +11,7 @@ const templates = [
     id: 'cv-rewrite', 
     name: 'Viết lại CV', 
     icon: <FileText size={18} />, 
-    prompt: "Hãy viết lại gạch đầu dòng kinh nghiệm sau trong CV theo hướng nhấn mạnh thành tích và bổ sung số liệu định lượng (%, $, số cụ thể) nếu có thể. Văn phong cần ngắn gọn, chuyên nghiệp. Chỉ trả về kết quả bằng tiếng Việt. Nội dung: "
+    prompt: "Bạn là một chuyên gia viết CV cấp cao. Hãy viết lại các gạch đầu dòng kinh nghiệm sau đây một cách cực kỳ chi tiết, chuyên nghiệp và có sức thuyết phục cao. Áp dụng công thức XYZ (Đã hoàn thành [X] bằng cách thực hiện [Y] dẫn đến kết quả [Z]) hoặc công thức STAR. Bổ sung các con số định lượng cụ thể, tỷ lệ phần trăm, quy mô ngân sách hoặc thời gian để chứng minh hiệu quả. Làm nổi bật các kỹ năng chuyên môn và kỹ năng mềm liên quan. Hãy mở rộng và làm phong phú thêm nội dung nhưng vẫn đảm bảo tính trung thực và chuyên nghiệp. Chỉ trả về nội dung đã viết lại bằng tiếng Việt. Nội dung: "
   },
   { 
     id: 'linkedin', 

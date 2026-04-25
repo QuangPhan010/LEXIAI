@@ -189,12 +189,24 @@ class HistoryView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = AnalysisHistorySerializer(data=request.data)
+        file_name = request.data.get('file_name')
+        # Kiểm tra xem người dùng này đã có lịch sử cho file này chưa
+        # Nếu rồi thì cập nhật, nếu chưa thì tạo mới
+        # Điều này cho phép nhiều tài khoản khác nhau lưu cùng 1 file CV mà không bị trùng lặp/ghi đè lẫn nhau
+        instance = AnalysisHistory.objects.filter(user=request.user, file_name=file_name).first()
+        
+        if instance:
+            serializer = AnalysisHistorySerializer(instance, data=request.data, partial=True)
+        else:
+            serializer = AnalysisHistorySerializer(data=request.data)
+
         if serializer.is_valid():
             serializer.save(user=request.user)
             # Cộng điểm cho phân tích CV
             request.user.profile.add_points(20)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            
+            res_status = status.HTTP_200_OK if instance else status.HTTP_201_CREATED
+            return Response(serializer.data, status=res_status)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class HistoryDetailView(APIView):

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { Upload, FileText, BarChart3, AlertCircle, CheckCircle2, ChevronRight, Zap, Trophy, ClipboardCheck, Target, Key } from 'lucide-react';
+import { Upload, FileText, BarChart3, AlertCircle, CheckCircle2, ChevronRight, Zap, Trophy, ClipboardCheck, Target, Key, PlusCircle, RefreshCw } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import { API_BASE_URL } from '@/lib/api';
 import { useSearchParams } from 'next/navigation';
@@ -316,7 +316,7 @@ function CVAnalyzerContent() {
 
       let aiResponseText = "";
       let retries = 0;
-      const maxRetries = 3;
+      const maxRetries = 5;
       while (retries < maxRetries) {
         try {
           const aiResult = await model.generateContent({
@@ -327,8 +327,13 @@ function CVAnalyzerContent() {
           break;
         } catch (err: any) {
           retries++;
-          if (retries < maxRetries && (err.message?.includes('503') || err.message?.includes('high demand'))) {
-            await delay(Math.pow(2, retries) * 1000);
+          const isRateLimit = err.message?.includes('429') || err.message?.includes('quota');
+          const isServiceBusy = err.message?.includes('503') || err.message?.includes('high demand') || err.message?.includes('service unavailable');
+          
+          if (retries < maxRetries && (isRateLimit || isServiceBusy)) {
+            const waitTime = Math.pow(2, retries) * 1000 + Math.random() * 1000;
+            console.log(`Model đang bận hoặc quá tải, thử lại lần ${retries}/${maxRetries} sau ${Math.round(waitTime)}ms...`);
+            await delay(waitTime);
           } else { throw err; }
         }
       }
@@ -416,9 +421,22 @@ function CVAnalyzerContent() {
           <div className="space-y-12">
             <div className="flex justify-between items-end">
               <div><h2 className="text-3xl font-bold">Kết quả phân tích</h2><p className="text-muted-foreground">Chi tiết về mức độ tối ưu của CV.</p></div>
-              <button onClick={() => setIsEditing(!isEditing)} className="px-6 py-3 rounded-xl bg-white/5 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/10 transition-all font-bold flex items-center gap-2">
-                {isEditing ? 'Đóng trình soạn thảo' : 'Mở trình soạn thảo & Xuất PDF'}
-              </button>
+              <div className="flex gap-4">
+                <button 
+                  onClick={() => {
+                    setResult(null);
+                    setFile(null);
+                    const username = localStorage.getItem('username') || 'guest';
+                    localStorage.removeItem(`last_cv_result_${username}`);
+                  }} 
+                  className="px-6 py-3 rounded-xl bg-accent text-white hover:opacity-90 transition-all font-bold flex items-center gap-2 shadow-lg hover-glow"
+                >
+                  <PlusCircle size={18} /> Phân tích CV mới
+                </button>
+                <button onClick={() => setIsEditing(!isEditing)} className="px-6 py-3 rounded-xl bg-white/5 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/10 transition-all font-bold flex items-center gap-2">
+                  {isEditing ? 'Đóng trình soạn thảo' : 'Mở trình soạn thảo & Xuất PDF'}
+                </button>
+              </div>
             </div>
 
             {isEditing ? (<div className="h-[800px]"><CVEditor initialContent={extractedText} /></div>) : (

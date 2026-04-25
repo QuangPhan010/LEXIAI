@@ -18,7 +18,7 @@ export default function SkillChart({ data }: SkillChartProps) {
 
   return (
     <div className="w-full h-[320px] flex items-center justify-center">
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer width="100%" height="100%" minWidth={0}>
         <RadarChart 
           cx="50%" 
           cy="50%" 
