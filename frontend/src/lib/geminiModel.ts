@@ -10,13 +10,13 @@ interface ListModelsResponse {
 }
 
 const MODEL_PREFERENCES: Record<ModelType, string[]> = {
-  pro: ['gemini-2.5-pro', 'gemini-2.0-pro', 'gemini-1.5-pro', 'gemini-pro-latest'],
-  flash: ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-flash-latest'],
+  pro: ['gemini-1.5-pro', 'gemini-pro-latest', 'gemini-2.0-pro', 'gemini-2.5-pro'],
+  flash: ['gemini-1.5-flash', 'gemini-flash-latest', 'gemini-2.0-flash', 'gemini-2.5-flash'],
 };
 
 const MODEL_FALLBACKS: Record<ModelType, string> = {
-  pro: 'gemini-2.0-pro',
-  flash: 'gemini-2.0-flash',
+  pro: 'gemini-1.5-pro',
+  flash: 'gemini-1.5-flash',
 };
 
 function normalizeModelName(modelName: string): string {

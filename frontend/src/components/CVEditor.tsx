@@ -68,8 +68,9 @@ export default function CVEditor({ initialContent }: CVEditorProps) {
 
     setIsOptimizing(true);
     try {
+      const modelType = (localStorage.getItem('lexiai_model') as 'flash' | 'pro') || 'flash';
       const genAI = new GoogleGenerativeAI(apiKey);
-      const modelName = await resolveGeminiModel(apiKey, 'pro');
+      const modelName = await resolveGeminiModel(apiKey, modelType);
       const model = genAI.getGenerativeModel({ model: modelName });
 
       const prompt = `
@@ -88,9 +89,13 @@ export default function CVEditor({ initialContent }: CVEditorProps) {
       // Update editor with HTML structure if possible, or just text
       // For simplicity, we replace everything
       editor.commands.setContent(optimizedText);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Lỗi tối ưu AI:", error);
-      alert("Không thể tối ưu bằng AI lúc này.");
+      if (error.message?.includes('429') || error.status === 429) {
+        alert("Bạn đã hết lượt sử dụng model Pro (Quota exceeded). Vui lòng chuyển sang mô hình 'FLASH' trên thanh điều hướng để tiếp tục.");
+      } else {
+        alert(`Không thể tối ưu bằng AI: ${error.message || "Lỗi không xác định"}`);
+      }
     } finally {
       setIsOptimizing(false);
     }

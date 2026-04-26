@@ -17,14 +17,14 @@ export default function SkillChart({ data }: SkillChartProps) {
   if (!data || data.length === 0) return null;
 
   return (
-    <div className="w-full h-[320px] flex items-center justify-center">
-      <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+    <div className="w-full h-[320px] relative" style={{ minWidth: 0 }}>
+      <ResponsiveContainer width="100%" height={320}>
         <RadarChart 
           cx="50%" 
           cy="50%" 
-          outerRadius="60%" 
+          outerRadius="80%" 
           data={data}
-          margin={{ top: 20, right: 30, bottom: 20, left: 30 }}
+          margin={{ top: 10, right: 30, bottom: 10, left: 30 }}
         >
           <PolarGrid stroke="rgba(255,255,255,0.1)" />
           <PolarAngleAxis 

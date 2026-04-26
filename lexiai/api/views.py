@@ -202,11 +202,14 @@ class HistoryView(APIView):
 
         if serializer.is_valid():
             serializer.save(user=request.user)
-            # Cộng điểm cho phân tích CV
-            request.user.profile.add_points(20)
+            # Cộng điểm cho phân tích CV (đảm bảo profile tồn tại)
+            profile, _ = UserProfile.objects.get_or_create(user=request.user)
+            profile.add_points(20)
             
             res_status = status.HTTP_200_OK if instance else status.HTTP_201_CREATED
             return Response(serializer.data, status=res_status)
+        
+        print("Serializer errors:", serializer.errors) # Log lỗi ra console server
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class HistoryDetailView(APIView):

@@ -151,7 +151,7 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-              <div className="glass p-6 space-y-2">
+              <div className="glass p-6 space-y-2 border-l-4 border-l-accent">
                 <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Điểm CV cao nhất</p>
                 <div className="flex items-end gap-2">
                   <span className="text-4xl font-black">{history.length > 0 ? Math.max(...history.map(h => h.score)) : 0}</span>
@@ -161,6 +161,16 @@ export default function Home() {
               <div className="glass p-6 space-y-2">
                 <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Tổng lượt phân tích</p>
                 <span className="text-4xl font-black">{history.length}</span>
+              </div>
+              <div className="glass p-6 space-y-2 group cursor-pointer hover:border-accent/30 transition-all">
+                <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center justify-between">
+                  AI Mentor 
+                  <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                </p>
+                <Link href="/mentor" className="flex items-center justify-between group-hover:text-accent transition-all">
+                  <span className="text-sm font-bold">Chat với Mentor</span>
+                  <ArrowRight size={16} />
+                </Link>
               </div>
             </div>
 

@@ -30,10 +30,10 @@ def save_user_profile(sender, instance, **kwargs):
 
 class AnalysisHistory(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='analyses')
-    file_name = models.CharField(max_length=255)
-    score = models.IntegerField()
-    breakdown = models.JSONField() # Stores breakdown like {ats: 80, structure: 70, ...}
-    issues = models.JSONField()    # Stores the list of issues and suggestions
+    file_name = models.CharField(max_length=500)
+    score = models.IntegerField(default=0)
+    breakdown = models.JSONField(null=True, blank=True) # Stores breakdown like {ats: 80, structure: 70, ...}
+    issues = models.JSONField(null=True, blank=True)    # Stores the list of issues and suggestions
     radar_data = models.JSONField(null=True, blank=True) # Stores chart data
     skill_gaps = models.JSONField(null=True, blank=True) # Stores skill gaps analysis
     ats_keywords = models.JSONField(null=True, blank=True) # Stores ATS keywords

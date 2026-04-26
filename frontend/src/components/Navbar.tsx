@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useTheme } from 'next-themes';
-import { Sun, Moon, LogOut, Settings, User as UserIcon, Menu, X } from 'lucide-react';
+import { Sun, Moon, LogOut, Settings, User as UserIcon, Menu, X, ChevronDown, Sparkles, Briefcase, History, FileText, Bot, Map, Search, Video } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import APIConfigModal from './APIConfigModal';
 
@@ -72,23 +72,69 @@ export default function Navbar() {
                 className="h-12 md:h-16 w-auto dark:brightness-100 brightness-0 invert-0 dark:invert-0"
               />
             </Link>
-            <div className="hidden lg:flex gap-4 md:gap-6 text-sm font-bold uppercase tracking-wider">
-              {[
-                { name: 'Viết lách', href: '/writing' },
-                { name: 'Phân tích CV', href: '/cv' },
-                { name: 'Phỏng vấn', href: '/interview' },
-                { name: 'Lộ trình', href: '/roadmap' },
-                { name: 'Việc làm', href: '/jobs' },
-                { name: 'Lịch sử', href: '/history' },
-              ].map((link) => (
-                <Link 
-                  key={link.href}
-                  href={link.href} 
-                  className={`transition-all hover:scale-105 ${pathname === link.href ? 'text-accent' : 'text-muted-foreground hover:text-zinc-800 dark:hover:text-white'}`}
-                >
-                  {link.name}
-                </Link>
-              ))}
+            <div className="hidden lg:flex gap-6 text-sm font-bold uppercase tracking-wider">
+              {/* AI Tools Dropdown */}
+              <div className="relative group py-4">
+                <button className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-all">
+                  Công cụ AI <ChevronDown size={14} className="group-hover:rotate-180 transition-transform" />
+                </button>
+                <div className="absolute top-full left-0 pt-2 opacity-0 translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-300 z-50">
+                  <div className="bg-[#111111] dark:bg-[#0a0a0a] p-3 min-w-[220px] space-y-1 shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/10 rounded-2xl">
+                    {[
+                      { name: 'Viết lách', href: '/writing', icon: <FileText size={14} />, desc: 'Soạn thảo nội dung bằng AI' },
+                      { name: 'AI Mentor', href: '/mentor', icon: <Bot size={14} />, desc: 'Tư vấn sự nghiệp 24/7' },
+                      { name: 'Lộ trình học', href: '/roadmap', icon: <Map size={14} />, desc: 'Kế hoạch phát triển sự nghiệp' },
+                    ].map((item) => (
+                      <Link 
+                        key={item.href} 
+                        href={item.href}
+                        className={`flex items-start gap-3 p-2.5 rounded-xl transition-all hover:bg-accent/10 hover:text-accent group/item ${pathname === item.href ? 'bg-accent/10 text-accent' : 'text-muted-foreground'}`}
+                      >
+                        <div className="mt-0.5">{item.icon}</div>
+                        <div>
+                          <div className="text-[11px] font-black">{item.name}</div>
+                          <div className="text-[9px] opacity-60 font-medium normal-case">{item.desc}</div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Career Dropdown */}
+              <div className="relative group py-4">
+                <button className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-all">
+                  Sự nghiệp <ChevronDown size={14} className="group-hover:rotate-180 transition-transform" />
+                </button>
+                <div className="absolute top-full left-0 pt-2 opacity-0 translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-300 z-50">
+                  <div className="bg-[#111111] dark:bg-[#0a0a0a] p-3 min-w-[220px] space-y-1 shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/10 rounded-2xl">
+                    {[
+                      { name: 'Phân tích CV', href: '/cv', icon: <Search size={14} />, desc: 'Tối ưu chỉ số ATS' },
+                      { name: 'Phỏng vấn AI', href: '/interview', icon: <Video size={14} />, desc: 'Mô phỏng phỏng vấn thực tế' },
+                      { name: 'Việc làm', href: '/jobs', icon: <Briefcase size={14} />, desc: 'Tìm kiếm cơ hội phù hợp' },
+                    ].map((item) => (
+                      <Link 
+                        key={item.href} 
+                        href={item.href}
+                        className={`flex items-start gap-3 p-2.5 rounded-xl transition-all hover:bg-accent/10 hover:text-accent group/item ${pathname === item.href ? 'bg-accent/10 text-accent' : 'text-muted-foreground'}`}
+                      >
+                        <div className="mt-0.5">{item.icon}</div>
+                        <div>
+                          <div className="text-[11px] font-black">{item.name}</div>
+                          <div className="text-[9px] opacity-60 font-medium normal-case">{item.desc}</div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <Link 
+                href="/history" 
+                className={`flex items-center gap-1.5 py-4 transition-all hover:scale-105 ${pathname === '/history' ? 'text-accent' : 'text-muted-foreground hover:text-zinc-800 dark:hover:text-white'}`}
+              >
+                Lịch sử
+              </Link>
             </div>
           </div>
 
@@ -168,25 +214,63 @@ export default function Navbar() {
               className="lg:hidden border-t border-zinc-200 dark:border-white/10 bg-white/80 dark:bg-black/20 backdrop-blur-xl overflow-hidden rounded-b-2xl"
             >
               <div className="flex flex-col p-4 gap-4">
-                {[
-                  { name: 'Viết lách', href: '/writing' },
-                  { name: 'Phân tích CV', href: '/cv' },
-                  { name: 'Phỏng vấn', href: '/interview' },
-                  { name: 'Lộ trình', href: '/roadmap' },
-                  { name: 'Việc làm', href: '/jobs' },
-                  { name: 'Lịch sử', href: '/history' },
-                ].map((link) => (
+                <div className="space-y-6">
+                  {/* AI Tools Section */}
+                  <div className="space-y-2">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-4">Công cụ AI</p>
+                    <div className="flex flex-col gap-1">
+                      {[
+                        { name: 'Viết lách', href: '/writing' },
+                        { name: 'AI Mentor', href: '/mentor' },
+                        { name: 'Lộ trình học', href: '/roadmap' },
+                      ].map((link) => (
+                        <Link 
+                          key={link.href}
+                          href={link.href} 
+                          onClick={() => setIsOpen(false)}
+                          className={`text-sm font-bold uppercase tracking-widest py-3 px-4 rounded-xl transition-all ${
+                            pathname === link.href ? 'bg-accent/10 text-accent border border-accent/20' : 'text-muted-foreground hover:bg-zinc-100 dark:hover:bg-white/5'
+                          }`}
+                        >
+                          {link.name}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Career Section */}
+                  <div className="space-y-2">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-4">Sự nghiệp</p>
+                    <div className="flex flex-col gap-1">
+                      {[
+                        { name: 'Phân tích CV', href: '/cv' },
+                        { name: 'Phỏng vấn AI', href: '/interview' },
+                        { name: 'Việc làm', href: '/jobs' },
+                      ].map((link) => (
+                        <Link 
+                          key={link.href}
+                          href={link.href} 
+                          onClick={() => setIsOpen(false)}
+                          className={`text-sm font-bold uppercase tracking-widest py-3 px-4 rounded-xl transition-all ${
+                            pathname === link.href ? 'bg-accent/10 text-accent border border-accent/20' : 'text-muted-foreground hover:bg-zinc-100 dark:hover:bg-white/5'
+                          }`}
+                        >
+                          {link.name}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+
                   <Link 
-                    key={link.href}
-                    href={link.href} 
+                    href="/history" 
                     onClick={() => setIsOpen(false)}
-                    className={`text-sm font-bold uppercase tracking-widest py-2.5 px-4 rounded-lg transition-all ${
-                      pathname === link.href ? 'bg-accent/10 text-accent border border-accent/20' : 'text-muted-foreground hover:bg-zinc-100 dark:hover:bg-white/5'
+                    className={`text-sm font-bold uppercase tracking-widest py-3 px-4 rounded-xl transition-all ${
+                      pathname === '/history' ? 'bg-accent/10 text-accent border border-accent/20' : 'text-muted-foreground hover:bg-zinc-100 dark:hover:bg-white/5'
                     }`}
                   >
-                    {link.name}
+                    Lịch sử
                   </Link>
-                ))}
+                </div>
                 
                 {/* Mobile Model Switcher */}
                 <div className="mt-4 p-4 rounded-2xl bg-zinc-100 dark:bg-white/5 border border-zinc-200 dark:border-white/10 space-y-3">

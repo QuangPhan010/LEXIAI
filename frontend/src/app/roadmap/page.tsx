@@ -11,8 +11,10 @@ export default function CareerRoadmapPage() {
   const [loading, setLoading] = useState(false);
   const [roadmapText, setRoadmapText] = useState<string | null>(null);
   const [targetRole, setTargetRole] = useState('');
+  const [mounted, setMounted] = useState(false);
   
   useEffect(() => {
+    setMounted(true);
     const username = localStorage.getItem('username') || 'guest';
     const savedRoadmap = localStorage.getItem(`last_roadmap_${username}`);
     if (savedRoadmap) setRoadmapText(savedRoadmap);
@@ -47,7 +49,7 @@ export default function CareerRoadmapPage() {
         4. **Chứng chỉ nên có**: Các chứng chỉ quốc tế giá trị cho lộ trình này.
         
         Văn phong chuyên nghiệp, truyền cảm hứng. Chỉ trả về Markdown bằng tiếng Việt.
-
+ 
         NỘI DUNG CV: ${cvText}
       `;
 
@@ -62,6 +64,8 @@ export default function CareerRoadmapPage() {
       setLoading(false);
     }
   };
+
+  if (!mounted) return null;
 
   return (
     <div className="bg-background text-foreground pt-32 pb-32 px-8">
@@ -87,12 +91,14 @@ export default function CareerRoadmapPage() {
                 type="text" 
                 value={targetRole}
                 onChange={(e) => setTargetRole(e.target.value)}
+                suppressHydrationWarning
                 placeholder="VD: Senior Frontend Engineer, Product Manager..."
                 className="w-full bg-white/5 border border-white/10 rounded-xl px-6 py-4 text-lg focus:outline-none focus:ring-1 focus:ring-accent transition-all"
               />
             </div>
             <button 
               onClick={generateRoadmap}
+              suppressHydrationWarning
               className="w-full py-5 premium-gradient rounded-2xl font-bold text-xl shadow-xl hover-glow transition-all flex items-center justify-center gap-3"
             >
               <Sparkles size={24} /> Bắt đầu xây dựng lộ trình
@@ -129,11 +135,13 @@ export default function CareerRoadmapPage() {
                   type="text" 
                   value={targetRole}
                   onChange={(e) => setTargetRole(e.target.value)}
+                  suppressHydrationWarning
                   placeholder="Mục tiêu mới..."
                   className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none"
                 />
                 <button 
                   onClick={generateRoadmap}
+                  suppressHydrationWarning
                   className="w-full py-3 bg-white/5 border border-white/10 hover:bg-white/10 rounded-xl font-bold transition-all flex items-center justify-center gap-2"
                 >
                   <RefreshCw size={16} /> Cập nhật lộ trình
