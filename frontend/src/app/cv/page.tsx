@@ -12,10 +12,13 @@ import CVEditor from '@/components/CVEditor';
 import dynamic from 'next/dynamic';
 
 const SkillChart = dynamic(() => import('@/components/SkillChart'), { 
-  ssr: false,
   loading: () => <div className="w-full h-[320px] flex items-center justify-center">
     <div className="w-8 h-8 border-4 border-t-accent border-white/10 rounded-full animate-spin" />
   </div>
+});
+
+const PDFDirectEditor = dynamic(() => import('@/components/PDFDirectEditor'), {
+  ssr: false,
 });
 
 interface AnalysisResult {
@@ -120,6 +123,7 @@ function CVAnalyzerContent() {
   const [jd, setJd] = useState('');
   const [extractedText, setExtractedText] = useState('');
   const [isEditing, setIsEditing] = useState(false);
+  const [isDirectEditing, setIsDirectEditing] = useState(false);
   const searchParams = useSearchParams();
 
   useEffect(() => {
@@ -428,9 +432,17 @@ function CVAnalyzerContent() {
                 >
                   <PlusCircle size={18} /> Phân tích CV mới
                 </button>
+                {/* 
+                <button 
+                  onClick={() => setIsDirectEditing(true)} 
+                  className="px-6 py-3 rounded-xl bg-accent/20 border border-accent/30 hover:bg-accent/30 text-accent transition-all font-bold flex items-center gap-2 shadow-lg"
+                >
+                  <Zap size={18} /> Sửa trực tiếp trên PDF
+                </button>
                 <button onClick={() => setIsEditing(!isEditing)} className="px-6 py-3 rounded-xl bg-white/5 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/10 transition-all font-bold flex items-center gap-2">
                   {isEditing ? 'Đóng trình soạn thảo' : 'Mở trình soạn thảo & Xuất PDF'}
                 </button>
+                */}
               </div>
             </div>
 
@@ -541,6 +553,16 @@ function CVAnalyzerContent() {
           </div>
         )}
       </main>
+
+      {/* Direct PDF Editor Modal
+      {isDirectEditing && file && result && (
+        <PDFDirectEditor 
+          file={file}
+          suggestions={result.issues}
+          onClose={() => setIsDirectEditing(false)}
+        />
+      )}
+      */}
     </div>
   );
 }
