@@ -159,7 +159,7 @@ class ExtractTextView(APIView):
                 return Response({"error": "Định dạng tệp không được hỗ trợ."}, status=status.HTTP_400_BAD_REQUEST)
             
             return Response({
-                "text": extracted_text,
+                "text": extracted_text.replace('\x00', ''),
                 "file_name": file_obj.name
             }, status=status.HTTP_200_OK)
 
@@ -197,7 +197,15 @@ class ProfileView(APIView):
         profile, _ = UserProfile.objects.get_or_create(user=request.user)
         serializer = UserProfileSerializer(profile, data=request.data, partial=True)
         if serializer.is_valid():
-            serializer.save()
+            instance = serializer.save()
+            
+            # Hoàn thành nhiệm vụ 'update_profile' nếu có mục tiêu
+            if instance.target_role:
+                from .models import Quest, UserQuest
+                quest = Quest.objects.filter(key='update_profile').first()
+                if quest:
+                    UserQuest.objects.get_or_create(user=request.user, quest=quest)
+            
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -311,8 +319,29 @@ class QuestListView(APIView):
 
     def get(self, request):
         today = timezone.now().date()
-        quests = Quest.objects.all()
         
+        # Check for daily login reward automatically
+        profile, _ = UserProfile.objects.get_or_create(user=request.user)
+        daily_quest = Quest.objects.filter(key='daily_login').first()
+        
+        # Kiểm tra xem đã có bản ghi hoàn thành nhiệm vụ ngày hôm nay chưa
+        has_daily_today = False
+        if daily_quest:
+            uq = UserQuest.objects.filter(user=request.user, quest=daily_quest).first()
+            if uq and uq.completed_at.date() == today:
+                has_daily_today = True
+        
+        if not has_daily_today:
+            profile.last_login_date = today
+            profile.save()
+            
+            if daily_quest:
+                # Xóa bản ghi cũ (của ngày trước) để tạo bản ghi mới cho hôm nay
+                UserQuest.objects.filter(user=request.user, quest=daily_quest).delete()
+                UserQuest.objects.create(user=request.user, quest=daily_quest, is_claimed=True)
+                profile.add_points(daily_quest.points)
+
+        quests = Quest.objects.all()
         # Get all user quests
         user_quests_records = UserQuest.objects.filter(user=request.user)
         user_quests_map = {uq.quest_id: uq for uq in user_quests_records}
@@ -332,9 +361,6 @@ class QuestListView(APIView):
                     is_today = uq.completed_at.date() == today
                     q['is_completed'] = is_today
                     q['is_claimed'] = uq.is_claimed if is_today else False
-                    
-                    # If it's a new day, we should technically reset the record 
-                    # but for now we just show it as not completed in the UI
                 else:
                     q['is_completed'] = True
                     q['is_claimed'] = uq.is_claimed
