@@ -10,8 +10,8 @@ import random
 from django.utils import timezone
 from datetime import timedelta
 from django.core.mail import send_mail
-from .models import AnalysisHistory, EmailOTP, InterviewHistory, UserProfile
-from .serializers import UserSerializer, AnalysisHistorySerializer, InterviewHistorySerializer
+from .models import AnalysisHistory, EmailOTP, InterviewHistory, UserProfile, Quest, UserQuest
+from .serializers import UserSerializer, AnalysisHistorySerializer, InterviewHistorySerializer, QuestSerializer, UserQuestSerializer
 
 class SendOTPView(APIView):
     permission_classes = [permissions.AllowAny]
@@ -173,6 +173,21 @@ class ProfileView(APIView):
         from .models import UserProfile
         from .serializers import UserProfileSerializer
         profile, created = UserProfile.objects.get_or_create(user=request.user)
+        
+        # Check for daily login quest
+        today = timezone.now().date()
+        if profile.last_login_date != today:
+            profile.last_login_date = today
+            profile.save()
+            
+            # Award daily login points if quest exists
+            daily_quest = Quest.objects.filter(key='daily_login').first()
+            if daily_quest:
+                # Reset UserQuest for a new day
+                UserQuest.objects.filter(user=request.user, quest=daily_quest).delete()
+                UserQuest.objects.create(user=request.user, quest=daily_quest, is_claimed=True) # Auto-claimed for daily
+                profile.add_points(daily_quest.points)
+        
         serializer = UserProfileSerializer(profile)
         return Response(serializer.data)
 
@@ -211,6 +226,11 @@ class HistoryView(APIView):
             # Cộng điểm cho phân tích CV (đảm bảo profile tồn tại)
             profile, _ = UserProfile.objects.get_or_create(user=request.user)
             profile.add_points(20)
+            
+            # Hoàn thành nhiệm vụ 'upload_cv'
+            cv_quest = Quest.objects.filter(key='upload_cv').first()
+            if cv_quest:
+                UserQuest.objects.get_or_create(user=request.user, quest=cv_quest)
             
             res_status = status.HTTP_200_OK if instance else status.HTTP_201_CREATED
             return Response(serializer.data, status=res_status)
@@ -254,6 +274,12 @@ class InterviewHistoryView(APIView):
             serializer.save(user=request.user)
             # Cộng điểm cho hoàn thành phỏng vấn
             request.user.profile.add_points(50)
+            
+            # Hoàn thành nhiệm vụ 'complete_interview'
+            int_quest = Quest.objects.filter(key='complete_interview').first()
+            if int_quest:
+                UserQuest.objects.get_or_create(user=request.user, quest=int_quest)
+            
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -279,3 +305,69 @@ class InterviewHistoryDetailView(APIView):
             return Response({"error": "Không tìm thấy dữ liệu."}, status=status.HTTP_404_NOT_FOUND)
         interview.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+class QuestListView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        today = timezone.now().date()
+        quests = Quest.objects.all()
+        
+        # Get all user quests
+        user_quests_records = UserQuest.objects.filter(user=request.user)
+        user_quests_map = {uq.quest_id: uq for uq in user_quests_records}
+        
+        serializer = QuestSerializer(quests, many=True)
+        data = serializer.data
+        
+        for q in data:
+            quest_id = q['id']
+            quest_type = q['quest_type']
+            
+            if quest_id in user_quests_map:
+                uq = user_quests_map[quest_id]
+                
+                if quest_type == 'DAILY':
+                    # For daily quests, check if completed today
+                    is_today = uq.completed_at.date() == today
+                    q['is_completed'] = is_today
+                    q['is_claimed'] = uq.is_claimed if is_today else False
+                    
+                    # If it's a new day, we should technically reset the record 
+                    # but for now we just show it as not completed in the UI
+                else:
+                    q['is_completed'] = True
+                    q['is_claimed'] = uq.is_claimed
+            else:
+                q['is_completed'] = False
+                q['is_claimed'] = False
+            
+        return Response(data)
+
+class ClaimQuestRewardView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, pk):
+        try:
+            quest = Quest.objects.get(pk=pk)
+            user_quest = UserQuest.objects.get(user=request.user, quest=quest)
+            
+            if user_quest.is_claimed:
+                return Response({"error": "Bạn đã nhận phần thưởng này rồi."}, status=status.HTTP_400_BAD_REQUEST)
+            
+            user_quest.is_claimed = True
+            user_quest.save()
+            
+            # Award points
+            request.user.profile.add_points(quest.points)
+            
+            return Response({
+                "message": f"Chúc mừng! Bạn đã nhận được {quest.points} XP.",
+                "points": quest.points,
+                "new_total": request.user.profile.points
+            })
+            
+        except Quest.DoesNotExist:
+            return Response({"error": "Nhiệm vụ không tồn tại."}, status=status.HTTP_404_NOT_FOUND)
+        except UserQuest.DoesNotExist:
+            return Response({"error": "Bạn chưa hoàn thành nhiệm vụ này."}, status=status.HTTP_400_BAD_REQUEST)

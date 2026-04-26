@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, FileSearch, ArrowRight, GitFork, Globe, BrainCircuit, Rocket, ShieldCheck, TrendingUp, Calendar, Map, CheckCircle2, RefreshCw } from 'lucide-react';
+import { Sparkles, FileSearch, ArrowRight, GitFork, Globe, BrainCircuit, Rocket, ShieldCheck, TrendingUp, Calendar, Map, CheckCircle2, RefreshCw, Trophy } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { resolveGeminiModel } from '@/lib/geminiModel';
@@ -176,6 +176,19 @@ export default function Home() {
                   <span className="text-sm font-bold">Chat với Mentor</span>
                   <ArrowRight size={16} />
                 </Link>
+              </div>
+              <div className="glass p-6 space-y-4 border-l-4 border-l-yellow-500 group cursor-pointer hover:border-yellow-500/50 transition-all">
+                <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center justify-between">
+                  Nhiệm vụ 
+                  <Trophy size={14} className="text-yellow-500" />
+                </p>
+                <Link href="/quests" className="flex items-center justify-between group-hover:text-yellow-500 transition-all">
+                  <span className="text-sm font-bold">Xem tất cả thử thách</span>
+                  <ArrowRight size={16} />
+                </Link>
+                <div className="h-1 bg-white/5 rounded-full overflow-hidden">
+                  <div className="h-full bg-yellow-500 w-1/3" /> {/* Mock progress for UI */}
+                </div>
               </div>
             </div>
 

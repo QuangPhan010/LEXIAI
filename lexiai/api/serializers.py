@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import AnalysisHistory, InterviewHistory, UserProfile
+from .models import AnalysisHistory, InterviewHistory, UserProfile, Quest, UserQuest
 
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
@@ -35,3 +35,16 @@ class InterviewHistorySerializer(serializers.ModelSerializer):
         model = InterviewHistory
         fields = '__all__'
         read_only_fields = ('user', 'created_at')
+
+class QuestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Quest
+        fields = '__all__'
+
+class UserQuestSerializer(serializers.ModelSerializer):
+    quest = QuestSerializer(read_only=True)
+    
+    class Meta:
+        model = UserQuest
+        fields = '__all__'
+        read_only_fields = ('user', 'completed_at')

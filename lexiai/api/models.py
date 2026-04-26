@@ -15,6 +15,8 @@ class UserProfile(models.Model):
     social_links = models.JSONField(default=dict, blank=True) # {github: '', linkedin: '', website: ''}
     achievements = models.JSONField(default=list, blank=True) # ['ats_master', 'interview_expert']
     created_at = models.DateTimeField(auto_now_add=True)
+    last_login_date = models.DateField(null=True, blank=True)
+
 
     def add_points(self, amount):
         self.points += amount
@@ -70,3 +72,32 @@ class InterviewHistory(models.Model):
 
     def __str__(self):
         return f"Interview {self.id} - {self.user.username} ({self.created_at})"
+
+class Quest(models.Model):
+    QUEST_TYPES = (
+        ('DAILY', 'Hàng ngày'),
+        ('ONE_TIME', 'Một lần'),
+        ('ACHIEVEMENT', 'Thành tựu'),
+    )
+    
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    points = models.IntegerField(default=10)
+    quest_type = models.CharField(max_length=20, choices=QUEST_TYPES, default='ONE_TIME')
+    key = models.CharField(max_length=50, unique=True) # e.g., 'upload_cv', 'chat_mentor'
+    icon = models.CharField(max_length=50, default='Sparkles') # Lucide icon name
+
+    def __str__(self):
+        return self.title
+
+class UserQuest(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='quests')
+    quest = models.ForeignKey(Quest, on_delete=models.CASCADE)
+    completed_at = models.DateTimeField(auto_now_add=True)
+    is_claimed = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ('user', 'quest')
+
+    def __str__(self):
+        return f"{self.user.username} - {self.quest.title}"

@@ -135,6 +135,12 @@ export default function Navbar() {
               >
                 Lịch sử
               </Link>
+              <Link 
+                href="/quests" 
+                className={`flex items-center gap-1.5 py-4 transition-all hover:scale-105 ${pathname === '/quests' ? 'text-accent' : 'text-muted-foreground hover:text-zinc-800 dark:hover:text-white'}`}
+              >
+                Nhiệm vụ
+              </Link>
             </div>
           </div>
 
@@ -269,6 +275,15 @@ export default function Navbar() {
                     }`}
                   >
                     Lịch sử
+                  </Link>
+                  <Link 
+                    href="/quests" 
+                    onClick={() => setIsOpen(false)}
+                    className={`text-sm font-bold uppercase tracking-widest py-3 px-4 rounded-xl transition-all ${
+                      pathname === '/quests' ? 'bg-accent/10 text-accent border border-accent/20' : 'text-muted-foreground hover:bg-zinc-100 dark:hover:bg-white/5'
+                    }`}
+                  >
+                    Nhiệm vụ
                   </Link>
                 </div>
                 
