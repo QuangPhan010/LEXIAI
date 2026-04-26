@@ -119,8 +119,10 @@ export default function Home() {
         <main className="max-w-7xl mx-auto pt-32 pb-32 px-6 space-y-10">
           <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div className="space-y-2">
-              <h1 className="text-4xl font-black tracking-tight text-gradient">Chào mừng trở lại! 👋</h1>
-              <p className="text-muted-foreground font-medium">Đây là bảng tổng quan tiến độ sự nghiệp của bạn.</p>
+              <h1 className="text-4xl font-black tracking-tight text-gradient">Chào mừng trở lại{profile?.username ? `, ${profile.username}` : ''}! 👋</h1>
+              <p className="text-muted-foreground font-medium">
+                {profile?.target_role ? `Bạn đang trên lộ trình trở thành ${profile.target_role}.` : 'Bắt đầu hành trình chinh phục sự nghiệp đỉnh cao ngay hôm nay.'}
+              </p>
             </div>
             <div className="flex gap-4">
               <Link href="/cv" className="px-6 py-3 premium-gradient rounded-xl font-bold shadow-lg hover-glow transition-all flex items-center gap-2">
@@ -132,12 +134,15 @@ export default function Home() {
           <div className="space-y-8">
             {/* Stats Overview */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="glass p-6 space-y-4 border-l-4 border-l-accent">
-                <div className="flex justify-between items-center">
+              <div className="glass p-6 space-y-4 border-l-4 border-l-accent relative overflow-hidden group">
+                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
+                  <TrendingUp size={60} />
+                </div>
+                <div className="flex justify-between items-center relative z-10">
                   <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Cấp độ người dùng</p>
                   <span className="px-2 py-1 bg-accent/20 rounded text-[10px] font-bold text-accent">LEVEL {profile?.level || 1}</span>
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-2 relative z-10">
                   <div className="flex justify-between text-xs font-bold">
                     <span>{profile?.points || 0} XP</span>
                     <span className="opacity-40">{(profile?.level || 1) * 100} XP</span>

@@ -79,7 +79,7 @@ export default function Navbar() {
                   Công cụ AI <ChevronDown size={14} className="group-hover:rotate-180 transition-transform" />
                 </button>
                 <div className="absolute top-full left-0 pt-2 opacity-0 translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-300 z-50">
-                  <div className="bg-[#111111] dark:bg-[#0a0a0a] p-3 min-w-[220px] space-y-1 shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/10 rounded-2xl">
+                  <div className="bg-background p-3 min-w-[220px] space-y-1 shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-black/5 dark:border-white/10 rounded-2xl">
                     {[
                       { name: 'Viết lách', href: '/writing', icon: <FileText size={14} />, desc: 'Soạn thảo nội dung bằng AI' },
                       { name: 'AI Mentor', href: '/mentor', icon: <Bot size={14} />, desc: 'Tư vấn sự nghiệp 24/7' },
@@ -88,12 +88,12 @@ export default function Navbar() {
                       <Link 
                         key={item.href} 
                         href={item.href}
-                        className={`flex items-start gap-3 p-2.5 rounded-xl transition-all hover:bg-accent/10 hover:text-accent group/item ${pathname === item.href ? 'bg-accent/10 text-accent' : 'text-muted-foreground'}`}
+                        className={`flex items-start gap-3 p-2.5 rounded-xl transition-all hover:bg-accent/10 hover:text-accent group/item ${pathname === item.href ? 'bg-accent/10 text-accent' : 'text-foreground'}`}
                       >
-                        <div className="mt-0.5">{item.icon}</div>
+                        <div className="mt-0.5 text-foreground">{item.icon}</div>
                         <div>
-                          <div className="text-[11px] font-black">{item.name}</div>
-                          <div className="text-[9px] opacity-60 font-medium normal-case">{item.desc}</div>
+                          <div className="text-[11px] font-black text-foreground">{item.name}</div>
+                          <div className="text-[9px] opacity-70 font-medium normal-case text-muted-foreground">{item.desc}</div>
                         </div>
                       </Link>
                     ))}
@@ -107,7 +107,7 @@ export default function Navbar() {
                   Sự nghiệp <ChevronDown size={14} className="group-hover:rotate-180 transition-transform" />
                 </button>
                 <div className="absolute top-full left-0 pt-2 opacity-0 translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-300 z-50">
-                  <div className="bg-[#111111] dark:bg-[#0a0a0a] p-3 min-w-[220px] space-y-1 shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/10 rounded-2xl">
+                  <div className="bg-background p-3 min-w-[220px] space-y-1 shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-black/5 dark:border-white/10 rounded-2xl">
                     {[
                       { name: 'Phân tích CV', href: '/cv', icon: <Search size={14} />, desc: 'Tối ưu chỉ số ATS' },
                       { name: 'Phỏng vấn AI', href: '/interview', icon: <Video size={14} />, desc: 'Mô phỏng phỏng vấn thực tế' },
@@ -116,12 +116,12 @@ export default function Navbar() {
                       <Link 
                         key={item.href} 
                         href={item.href}
-                        className={`flex items-start gap-3 p-2.5 rounded-xl transition-all hover:bg-accent/10 hover:text-accent group/item ${pathname === item.href ? 'bg-accent/10 text-accent' : 'text-muted-foreground'}`}
+                        className={`flex items-start gap-3 p-2.5 rounded-xl transition-all hover:bg-accent/10 hover:text-accent group/item ${pathname === item.href ? 'bg-accent/10 text-accent' : 'text-foreground'}`}
                       >
-                        <div className="mt-0.5">{item.icon}</div>
+                        <div className="mt-0.5 text-foreground">{item.icon}</div>
                         <div>
-                          <div className="text-[11px] font-black">{item.name}</div>
-                          <div className="text-[9px] opacity-60 font-medium normal-case">{item.desc}</div>
+                          <div className="text-[11px] font-black text-foreground">{item.name}</div>
+                          <div className="text-[9px] opacity-70 font-medium normal-case text-muted-foreground">{item.desc}</div>
                         </div>
                       </Link>
                     ))}
@@ -175,9 +175,9 @@ export default function Navbar() {
             {/* User Profile */}
             {username ? (
               <div className="flex items-center gap-2 border-l border-zinc-200 dark:border-white/10 pl-4">
-                <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center text-accent">
+                <Link href="/profile" className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center text-accent hover:bg-accent/30 transition-all cursor-pointer">
                   <UserIcon size={16} />
-                </div>
+                </Link>
                 <button 
                   onClick={handleLogout}
                   className="p-2 rounded-full hover:bg-red-500/10 text-red-500 transition-all"

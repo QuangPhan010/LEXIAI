@@ -1,13 +1,20 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import AnalysisHistory, InterviewHistory
+from .models import AnalysisHistory, InterviewHistory, UserProfile
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = '__all__'
+        read_only_fields = ('user', 'points', 'level', 'created_at')
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
+    profile = UserProfileSerializer(read_only=True)
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'password')
+        fields = ('id', 'username', 'email', 'password', 'profile')
 
     def create(self, validated_data):
         user = User.objects.create_user(

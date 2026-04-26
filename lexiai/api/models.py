@@ -8,6 +8,12 @@ class UserProfile(models.Model):
     points = models.IntegerField(default=0)
     level = models.IntegerField(default=1)
     bio = models.TextField(null=True, blank=True)
+    target_role = models.CharField(max_length=255, null=True, blank=True)
+    industry = models.CharField(max_length=255, null=True, blank=True)
+    skills = models.JSONField(default=list, blank=True)
+    experience_level = models.CharField(max_length=50, null=True, blank=True)
+    social_links = models.JSONField(default=dict, blank=True) # {github: '', linkedin: '', website: ''}
+    achievements = models.JSONField(default=list, blank=True) # ['ats_master', 'interview_expert']
     created_at = models.DateTimeField(auto_now_add=True)
 
     def add_points(self, amount):

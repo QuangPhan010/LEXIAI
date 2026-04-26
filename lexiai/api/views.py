@@ -171,14 +171,20 @@ class ProfileView(APIView):
 
     def get(self, request):
         from .models import UserProfile
+        from .serializers import UserProfileSerializer
         profile, created = UserProfile.objects.get_or_create(user=request.user)
-        return Response({
-            "username": request.user.username,
-            "email": request.user.email,
-            "points": profile.points,
-            "level": profile.level,
-            "created_at": profile.created_at
-        })
+        serializer = UserProfileSerializer(profile)
+        return Response(serializer.data)
+
+    def patch(self, request):
+        from .models import UserProfile
+        from .serializers import UserProfileSerializer
+        profile, _ = UserProfile.objects.get_or_create(user=request.user)
+        serializer = UserProfileSerializer(profile, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class HistoryView(APIView):
     permission_classes = [permissions.IsAuthenticated]
