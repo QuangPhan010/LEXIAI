@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Sparkles, Copy, RefreshCw, FileText, Mail, FileCheck, Check, Link, MessageSquare } from 'lucide-react';
 import Navbar from '@/components/Navbar';
