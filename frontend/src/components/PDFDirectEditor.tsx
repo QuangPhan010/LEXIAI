@@ -204,7 +204,7 @@ export default function PDFDirectEditor({ file, suggestions, onClose }: PDFDirec
 
   const handleDownload = () => {
     if (!modifiedPdfBytes) return;
-    const blob = new Blob([modifiedPdfBytes], { type: 'application/pdf' });
+    const blob = new Blob([modifiedPdfBytes as any], { type: 'application/pdf' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
