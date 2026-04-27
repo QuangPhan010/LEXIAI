@@ -130,6 +130,7 @@ export default function PDFDirectEditor({ file, suggestions, onClose }: PDFDirec
     const renderContext = {
       canvasContext: context,
       viewport: viewport,
+      canvas: canvas,
     };
 
     await page.render(renderContext).promise;
