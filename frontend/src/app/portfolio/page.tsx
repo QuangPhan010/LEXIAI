@@ -227,9 +227,9 @@ function PortfolioContent() {
         
         Yêu cầu kết quả trả về bằng định dạng JSON:
         {
-          "implementationGuide": "Hướng dẫn chi tiết về cấu trúc thư mục, quy trình các bước hoặc sơ đồ thực hiện dự án",
+          "implementationGuide": "Hướng dẫn chi tiết về cấu trúc thư mục, quy trình các bước hoặc sơ đồ thực hiện dự án. Lưu ý: Hãy trình bày rõ ràng, sử dụng xuống dòng cho các hạng mục hoặc bước thực hiện.",
           "preRequisites": ["Các phần mềm cần có", "Tài liệu cần đọc", "Dữ liệu cần chuẩn bị"],
-          "dataDesign": "Thiết kế hệ thống dữ liệu, các biến số chính, hoặc các hạng mục thông tin cần quản lý",
+          "dataDesign": "Thiết kế hệ thống dữ liệu, các biến số chính, hoặc các hạng mục thông tin cần quản lý. Lưu ý: Hãy trình bày theo danh sách có số thứ tự 1, 2, 3... và mỗi mục phải nằm trên một dòng mới.",
           "keyDeliverables": [
             {
               "title": "Tên thành phần cốt lõi (VD: Module X, Bản thảo Y, Quy trình Z)",
@@ -291,11 +291,11 @@ ${(blueprint.preRequisites || []).map(item => `- ${item}`).join('\n')}
 
 ## 2. HƯỚNG DẪN TỔ CHỨC & TRIỂN KHAI
 \`\`\`
-${blueprint.implementationGuide}
+${blueprint.implementationGuide?.replace(/(\d+\.)/g, '\n$1').trim()}
 \`\`\`
 
 ## 3. THIẾT KẾ DỮ LIỆU & THÔNG TIN
-${blueprint.dataDesign || 'N/A'}
+${blueprint.dataDesign?.replace(/(\d+\.)/g, '\n$1').trim() || 'N/A'}
 
 ## 4. CÁC THÀNH PHẦN CỐT LÕI
 ${(blueprint.keyDeliverables || []).map(item => `
@@ -426,10 +426,10 @@ Tạo bởi LEXIAI - AI Career Assistant
       </ul>
       
       <h2>2. HƯỚNG DẪN TỔ CHỨC & TRIỂN KHAI</h2>
-      <pre style="background: #f4f4f4; padding: 10px; border: 1px solid #ddd;">${blueprint.implementationGuide}</pre>
+      <pre style="background: #f4f4f4; padding: 10px; border: 1px solid #ddd; font-family: sans-serif; white-space: pre-wrap;">${blueprint.implementationGuide?.replace(/(\d+\.)/g, '\n$1').trim()}</pre>
       
       <h2>3. THIẾT KẾ DỮ LIỆU & THÔNG TIN</h2>
-      <p>${blueprint.dataDesign || 'N/A'}</p>
+      <pre style="background: #f4f4f4; padding: 10px; border: 1px solid #ddd; font-family: sans-serif; white-space: pre-wrap;">${blueprint.dataDesign?.replace(/(\d+\.)/g, '\n$1').trim() || 'N/A'}</pre>
       
       <h2>4. CÁC THÀNH PHẦN CỐT LÕI</h2>
       ${(blueprint.keyDeliverables || []).map(item => `
@@ -805,13 +805,13 @@ Tạo bởi LEXIAI - AI Career Assistant
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-background/80 backdrop-blur-md"
+            className="fixed inset-0 z-[100] flex items-start sm:items-center justify-center p-4 sm:p-6 bg-background/80 backdrop-blur-md overflow-y-auto"
           >
             <motion.div
               initial={{ scale: 0.95, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, y: 20 }}
-              className="bg-background border border-white/10 w-full max-w-4xl max-h-[90vh] rounded-3xl overflow-hidden flex flex-col shadow-2xl relative"
+              className="bg-background border border-white/10 w-full max-w-4xl max-h-[85vh] sm:max-h-[90vh] rounded-3xl overflow-hidden flex flex-col shadow-2xl relative my-auto"
             >
               {/* Close Button */}
               <button 
@@ -821,7 +821,7 @@ Tạo bởi LEXIAI - AI Career Assistant
                 <X size={24} />
               </button>
 
-              <div className="p-10 border-b border-white/5 premium-gradient">
+              <div className="p-8 sm:p-10 border-b border-white/5 premium-gradient shrink-0">
                 <div className="flex items-center gap-3 mb-2">
                   <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
                     <Rocket className="text-white" size={24} />
@@ -867,9 +867,9 @@ Tạo bởi LEXIAI - AI Career Assistant
                     {/* Folder Structure */}
                     <section className="space-y-4">
                       <h3 className="text-lg font-bold flex items-center gap-2"><Layers size={20} className="text-accent" /> Cấu trúc & Tổ chức</h3>
-                      <pre className="bg-zinc-950 p-6 rounded-xl border border-white/5 font-mono text-xs leading-relaxed text-zinc-300 overflow-x-auto whitespace-pre-wrap">
-                        {blueprint.implementationGuide}
-                      </pre>
+                        <pre className="bg-zinc-950 p-6 rounded-xl border border-white/5 font-mono text-xs leading-relaxed text-zinc-300 overflow-x-auto whitespace-pre-wrap">
+                          {blueprint.implementationGuide?.replace(/(\d+\.)/g, '\n$1').trim()}
+                        </pre>
                     </section>
 
                     {/* Database Schema */}
@@ -877,7 +877,7 @@ Tạo bởi LEXIAI - AI Career Assistant
                       <section className="space-y-4">
                         <h3 className="text-lg font-bold flex items-center gap-2"><Database size={20} className="text-accent" /> Thiết kế Dữ liệu & Thông tin</h3>
                         <pre className="bg-zinc-950 p-6 rounded-xl border border-white/5 font-mono text-xs leading-relaxed text-zinc-300 overflow-x-auto whitespace-pre-wrap">
-                          {blueprint.dataDesign}
+                          {blueprint.dataDesign?.replace(/(\d+\.)/g, '\n$1').trim()}
                         </pre>
                       </section>
                     )}

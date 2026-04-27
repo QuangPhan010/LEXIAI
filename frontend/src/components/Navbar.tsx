@@ -171,13 +171,37 @@ export default function Navbar() {
             </div>
 
             {/* API Config */}
-            <button 
-              onClick={() => setShowModal(true)}
-              className="flex items-center gap-2 px-3 py-2 rounded-full bg-zinc-100 dark:bg-white/5 border border-zinc-200 dark:border-white/10 hover:bg-muted transition-all"
-            >
-              <div className={`w-2 h-2 rounded-full ${apiKey ? 'bg-green-500 shadow-glow' : 'bg-red-500'}`} />
-              <Settings size={16} className="text-zinc-600 dark:text-zinc-400" />
-            </button>
+            <div className="relative group">
+              <button 
+                onClick={() => setShowModal(true)}
+                className={`flex items-center gap-2 px-3 py-2 rounded-full border transition-all hover:scale-105 ${
+                  apiKey 
+                    ? 'bg-zinc-100 dark:bg-white/5 border-zinc-200 dark:border-white/10' 
+                    : 'bg-red-500/10 border-red-500/40 ring-4 ring-red-500/5'
+                }`}
+              >
+                <div className="relative flex items-center justify-center">
+                  <div className={`w-2 h-2 rounded-full ${apiKey ? 'bg-green-500' : 'bg-red-500'}`} />
+                  {!apiKey && (
+                    <div className="absolute w-2 h-2 rounded-full bg-red-500 animate-ping opacity-75" />
+                  )}
+                </div>
+                <Settings size={16} className={apiKey ? "text-zinc-600 dark:text-zinc-400" : "text-red-500"} />
+                <span className={`text-[10px] font-black hidden lg:block ${apiKey ? 'text-muted-foreground' : 'text-red-500 animate-pulse'}`}>
+                  {apiKey ? 'API READY' : 'NHẬP KEY ĐỂ DÙNG'}
+                </span>
+              </button>
+              
+              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-3 py-2 bg-background border border-black/5 dark:border-white/10 shadow-2xl rounded-xl opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 pointer-events-none z-[60] min-w-[140px] text-center">
+                <p className="text-[10px] font-black uppercase text-foreground">
+                  {apiKey ? 'Đã cấu hình API' : 'Cấu hình API Key'}
+                </p>
+                <p className="text-[9px] text-muted-foreground font-medium normal-case">
+                  {apiKey ? 'Bạn có thể thay đổi key bất cứ lúc nào' : 'Bấm vào đây để bắt đầu sử dụng AI'}
+                </p>
+                <div className="absolute -top-1 left-1/2 -translate-x-1/2 border-4 border-transparent border-b-background" />
+              </div>
+            </div>
 
             {/* User Profile */}
             {username ? (
@@ -289,8 +313,41 @@ export default function Navbar() {
                   </Link>
                 </div>
                 
-                {/* Mobile Model Switcher */}
+                {/* Mobile API Config */}
                 <div className="mt-4 p-4 rounded-2xl bg-zinc-100 dark:bg-white/5 border border-zinc-200 dark:border-white/10 space-y-3">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2">
+                    Cấu hình API
+                  </p>
+                  <button
+                    onClick={() => { setShowModal(true); setIsOpen(false); }}
+                    className={`w-full flex items-center justify-between p-3 rounded-xl border transition-all ${
+                      apiKey 
+                        ? 'bg-white/50 dark:bg-black/20 border-zinc-200 dark:border-white/10' 
+                        : 'bg-red-500/10 border-red-500/50 animate-pulse'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="relative flex items-center justify-center">
+                        <div className={`w-2 h-2 rounded-full ${apiKey ? 'bg-green-500' : 'bg-red-500'}`} />
+                        {!apiKey && (
+                          <div className="absolute w-2 h-2 rounded-full bg-red-500 animate-ping opacity-75" />
+                        )}
+                      </div>
+                      <span className="text-[11px] font-black uppercase text-foreground">
+                        {apiKey ? 'API: ĐÃ KẾT NỐI' : 'CHƯA CÓ API KEY'}
+                      </span>
+                    </div>
+                    <Settings size={16} className={apiKey ? "text-zinc-600 dark:text-zinc-400" : "text-red-500"} />
+                  </button>
+                  {!apiKey && (
+                    <p className="text-[9px] text-red-500 font-bold text-center animate-pulse">
+                      Bấm vào để nhập Key và bắt đầu sử dụng!
+                    </p>
+                  )}
+                </div>
+
+                {/* Mobile Model Switcher */}
+                <div className="mt-2 p-4 rounded-2xl bg-zinc-100 dark:bg-white/5 border border-zinc-200 dark:border-white/10 space-y-3">
                   <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-2">
                     Mô hình AI
                   </p>
