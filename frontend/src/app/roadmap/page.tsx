@@ -7,7 +7,7 @@ import { Rocket, Sparkles, Target, BookOpen, GraduationCap, ArrowRight, RefreshC
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { resolveGeminiModel } from '@/lib/geminiModel';
 
-export default function CareerRoadmapPage() {
+function CareerRoadmapContent() {
   const [loading, setLoading] = useState(false);
   const [roadmapText, setRoadmapText] = useState<string | null>(null);
   const [targetRole, setTargetRole] = useState('');
@@ -17,7 +17,23 @@ export default function CareerRoadmapPage() {
     setMounted(true);
     const username = localStorage.getItem('username') || 'guest';
     const savedRoadmap = localStorage.getItem(`last_roadmap_${username}`);
-    if (savedRoadmap) setRoadmapText(savedRoadmap);
+    const savedRole = localStorage.getItem(`last_roadmap_role_${username}`);
+    const savedCvSig = localStorage.getItem(`last_roadmap_cv_sig_${username}`);
+    
+    // Kiểm tra xem Roadmap có khớp với CV hiện tại không
+    const currentCvText = localStorage.getItem(`last_cv_text_${username}`) || '';
+    const currentCvSig = currentCvText.substring(0, 100);
+
+    if (savedRole) setTargetRole(savedRole);
+    
+    if (savedRoadmap && savedCvSig === currentCvSig) {
+      setRoadmapText(savedRoadmap);
+    } else if (savedRoadmap) {
+      // Nếu CV đã đổi, xóa roadmap cũ để tránh nhầm lẫn
+      localStorage.removeItem(`last_roadmap_${username}`);
+      localStorage.removeItem(`last_roadmap_role_${username}`);
+      localStorage.removeItem(`last_roadmap_cv_sig_${username}`);
+    }
   }, []);
 
   const generateRoadmap = async () => {
@@ -56,7 +72,11 @@ export default function CareerRoadmapPage() {
       const result = await model.generateContent(prompt);
       const text = result.response.text();
       setRoadmapText(text);
+      
+      // Lưu kết quả kèm theo metadata để kiểm tra tính hợp lệ sau này
       localStorage.setItem(`last_roadmap_${username}`, text);
+      localStorage.setItem(`last_roadmap_role_${username}`, targetRole);
+      localStorage.setItem(`last_roadmap_cv_sig_${username}`, cvText.substring(0, 100));
     } catch (error: any) {
       console.error(error);
       alert(`Lỗi: ${error.message}`);
@@ -185,3 +205,18 @@ export default function CareerRoadmapPage() {
     </div>
   );
 }
+
+export default function CareerRoadmapPage() {
+  const [userKey, setUserKey] = useState<string | null>(null);
+
+  useEffect(() => {
+    setUserKey(localStorage.getItem('username') || 'guest');
+  }, []);
+
+  if (userKey === null) return null;
+
+  return (
+    <CareerRoadmapContent key={userKey} />
+  );
+}
+

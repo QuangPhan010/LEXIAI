@@ -14,7 +14,7 @@ interface HistoryItem {
   created_at: string;
 }
 
-export default function HistoryPage() {
+function HistoryContent() {
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [type, setType] = useState<'cv' | 'interview'>('cv');
@@ -170,3 +170,18 @@ export default function HistoryPage() {
     </div>
   );
 }
+
+export default function HistoryPage() {
+  const [userKey, setUserKey] = useState<string | null>(null);
+
+  useEffect(() => {
+    setUserKey(localStorage.getItem('username') || 'guest');
+  }, []);
+
+  if (userKey === null) return null;
+
+  return (
+    <HistoryContent key={userKey} />
+  );
+}
+

@@ -628,13 +628,21 @@ function MockInterviewContent() {
 }
 
 export default function MockInterviewPage() {
+  const [userKey, setUserKey] = useState<string | null>(null);
+
+  useEffect(() => {
+    setUserKey(localStorage.getItem('username') || 'guest');
+  }, []);
+
+  if (userKey === null) return null;
+
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="w-12 h-12 border-4 border-t-accent border-white/10 rounded-full animate-spin" />
       </div>
     }>
-      <MockInterviewContent />
+      <MockInterviewContent key={userKey} />
     </Suspense>
   );
 }

@@ -47,7 +47,7 @@ const mockJobs: Job[] = [
   }
 ];
 
-export default function JobMatcherPage() {
+function JobMatcherContent() {
   const [searchTerm, setSearchTerm] = useState('');
   const [matchingId, setMatchingId] = useState<string | null>(null);
   const [matchResult, setMatchResult] = useState<{ score: number; feedback: string } | null>(null);
@@ -82,7 +82,7 @@ export default function JobMatcherPage() {
         
         NỘI DUNG CV: ${cvText}
         JD CÔNG VIỆC: ${job.title} tại ${job.company}. Mô tả: ${job.description}
-
+ 
         Hãy trả về kết quả dưới dạng JSON:
         {
           "score": number (0-100),
@@ -223,3 +223,18 @@ export default function JobMatcherPage() {
     </div>
   );
 }
+
+export default function JobMatcherPage() {
+  const [userKey, setUserKey] = useState<string | null>(null);
+
+  useEffect(() => {
+    setUserKey(localStorage.getItem('username') || 'guest');
+  }, []);
+
+  if (userKey === null) return null;
+
+  return (
+    <JobMatcherContent key={userKey} />
+  );
+}
+

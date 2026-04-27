@@ -427,6 +427,9 @@ function CVAnalyzerContent() {
                     setFile(null);
                     const username = localStorage.getItem('username') || 'guest';
                     localStorage.removeItem(`last_cv_result_${username}`);
+                    localStorage.removeItem(`last_roadmap_${username}`);
+                    localStorage.removeItem(`last_roadmap_role_${username}`);
+                    localStorage.removeItem(`last_roadmap_cv_sig_${username}`);
                   }} 
                   className="px-6 py-3 rounded-xl bg-accent text-white hover:opacity-90 transition-all font-bold flex items-center gap-2 shadow-lg hover-glow"
                 >

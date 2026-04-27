@@ -52,7 +52,7 @@ const ROUTE_MAP: Record<string, string> = {
   'daily_login': '/'
 };
 
-export default function QuestsPage() {
+function QuestsContent() {
   const [quests, setQuests] = useState<Quest[]>([]);
   const [loading, setLoading] = useState(true);
   const [claimingId, setClaimingId] = useState<number | null>(null);
@@ -204,6 +204,21 @@ export default function QuestsPage() {
     </div>
   );
 }
+
+export default function QuestsPage() {
+  const [userKey, setUserKey] = useState<string | null>(null);
+
+  useEffect(() => {
+    setUserKey(localStorage.getItem('username') || 'guest');
+  }, []);
+
+  if (userKey === null) return null;
+
+  return (
+    <QuestsContent key={userKey} />
+  );
+}
+
 
 function QuestCard({ quest, onClaim, claimingId }: { quest: Quest, onClaim: (id: number) => void, claimingId: number | null }) {
   const isClaiming = claimingId === quest.id;

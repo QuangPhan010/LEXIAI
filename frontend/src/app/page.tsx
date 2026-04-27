@@ -12,7 +12,7 @@ import { resolveGeminiModel } from '@/lib/geminiModel';
 import { API_BASE_URL } from '@/lib/api';
 import { Briefcase } from 'lucide-react';
 
-export default function Home() {
+function HomeContent() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [history, setHistory] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -310,7 +310,7 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {[
                 { icon: <FileSearch size={32} />, title: "Phân tích sâu ngữ cảnh", desc: "Đánh giá toàn diện nội dung CV vượt xa đối sánh từ khóa thông thường.", color: "indigo" },
-                { icon: <BrainCircuit size={32} />, title: "Động cơ viết lại bằng AI", desc: "Trích xuất thành tích và viết lại theo thời gian thực với Gemini.", color: "purple" },
+                { icon: <BrainCircuit size={32} />, title: "Động cơ viết lại bằng AI", desc: "Trích xuất thành tích và viết lại theo thời gian thực with Gemini.", color: "purple" },
                 { icon: <ShieldCheck size={32} />, title: "Tương thích ATS", desc: "Đối chiếu CV với các tiêu chuẩn chấm điểm thực tế từ chuyên gia.", color: "blue" }
               ].map((feature, i) => (
                 <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="glass p-10 space-y-6 card-hover group">
@@ -328,5 +328,19 @@ export default function Home() {
         </>
       )}
     </div>
+  );
+}
+
+export default function Home() {
+  const [userKey, setUserKey] = useState<string | null>(null);
+
+  useEffect(() => {
+    setUserKey(localStorage.getItem('username') || 'guest');
+  }, []);
+
+  if (userKey === null) return null;
+
+  return (
+    <HomeContent key={userKey} />
   );
 }

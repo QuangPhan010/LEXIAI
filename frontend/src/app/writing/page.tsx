@@ -40,7 +40,7 @@ const tones = [
   { id: 'creative', name: 'Sáng tạo', description: 'Độc đáo, mới lạ' }
 ];
 
-export default function WritingAssistant() {
+function WritingContent() {
   const [input, setInput] = useState('');
   const [output, setOutput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -197,3 +197,18 @@ export default function WritingAssistant() {
     </div>
   );
 }
+
+export default function WritingAssistant() {
+  const [userKey, setUserKey] = useState<string | null>(null);
+
+  useEffect(() => {
+    setUserKey(localStorage.getItem('username') || 'guest');
+  }, []);
+
+  if (userKey === null) return null;
+
+  return (
+    <WritingContent key={userKey} />
+  );
+}
+

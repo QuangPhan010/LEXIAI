@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { API_BASE_URL } from '@/lib/api';
 
-export default function ProfilePage() {
+function ProfileContent() {
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -359,3 +359,18 @@ export default function ProfilePage() {
     </div>
   );
 }
+
+export default function ProfilePage() {
+  const [userKey, setUserKey] = useState<string | null>(null);
+
+  useEffect(() => {
+    setUserKey(localStorage.getItem('username') || 'guest');
+  }, []);
+
+  if (userKey === null) return null;
+
+  return (
+    <ProfileContent key={userKey} />
+  );
+}
+
