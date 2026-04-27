@@ -183,7 +183,7 @@ function WritingContent() {
           <div className="flex items-center justify-between">
             <label className="text-[10px] font-black uppercase tracking-widest text-accent">Kết quả AI</label>
             {output && (
-              <button onClick={copyToClipboard} suppressHydrationWarning className="flex items-center gap-1.5 text-[10px] text-zinc-300 hover:text-white transition-all bg-white/5 px-2 py-1 rounded">
+              <button onClick={copyToClipboard} suppressHydrationWarning className="flex items-center gap-1.5 text-[10px] text-muted-foreground hover:text-foreground transition-all bg-muted px-2 py-1 rounded border border-glass-border">
                 {copied ? <Check size={12} className="text-green-500" /> : <Copy size={12} />}
                 {copied ? 'Đã sao chép!' : 'Sao chép'}
               </button>

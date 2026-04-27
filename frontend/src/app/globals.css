@@ -1,18 +1,20 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #020617;
-  --muted: #f1f5f9;
-  --muted-foreground: #1e293b;
-  --accent: #6366f1;
-  --accent-hover: #4f46e5;
-  --glass: rgba(0, 0, 0, 0.04);
-  --glass-border: rgba(0, 0, 0, 0.1);
-  --card-hover-bg: rgba(0, 0, 0, 0.03);
-  --input-bg: #ffffff;
-  --text-gradient-from: #020617;
+  --background: #e2e8f0;
+  --foreground: #0f172a;
+  --muted: #cbd5e1;
+  --muted-foreground: #475569;
+  --accent: #4f46e5;
+  --accent-hover: #4338ca;
+  --glass: rgba(255, 255, 255, 0.2);
+  --glass-border: rgba(0, 0, 0, 0.05);
+  --card-hover-bg: rgba(255, 255, 255, 0.3);
+  --input-bg: #f1f5f9;
+  --text-gradient-from: #0f172a;
   --text-gradient-to: #334155;
+  --chart-grid: rgba(0, 0, 0, 0.1);
+  --chart-axis: rgba(0, 0, 0, 0.6);
 }
 
 .dark {
@@ -26,6 +28,8 @@
   --input-bg: rgba(9, 9, 11, 0.5);
   --text-gradient-from: #ffffff;
   --text-gradient-to: #a1a1aa;
+  --chart-grid: rgba(255, 255, 255, 0.05);
+  --chart-axis: rgba(255, 255, 255, 0.3);
 }
 
 @theme {
@@ -103,7 +107,7 @@
   @apply bg-background;
 }
 ::-webkit-scrollbar-thumb {
-  @apply bg-zinc-800 rounded-full hover:bg-zinc-700 transition-colors;
+  @apply bg-zinc-300 dark:bg-zinc-800 rounded-full hover:bg-zinc-400 dark:hover:bg-zinc-700 transition-colors;
 }
 
 /* Animations */

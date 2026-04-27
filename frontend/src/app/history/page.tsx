@@ -82,16 +82,16 @@ function HistoryContent() {
             <p className="text-muted-foreground">Xem lại các bản phân tích CV và phỏng vấn trước đây.</p>
           </div>
           
-          <div className="flex bg-white/5 p-1 rounded-xl border border-white/10">
+          <div className="flex bg-glass p-1 rounded-xl border border-glass-border">
             <button 
               onClick={() => setType('cv')}
-              className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${type === 'cv' ? 'premium-gradient text-white shadow-lg' : 'text-zinc-400 hover:text-white'}`}
+              className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${type === 'cv' ? 'premium-gradient text-white shadow-lg' : 'text-muted-foreground hover:text-foreground'}`}
             >
               CV Analysis
             </button>
             <button 
               onClick={() => setType('interview')}
-              className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${type === 'interview' ? 'premium-gradient text-white shadow-lg' : 'text-zinc-400 hover:text-white'}`}
+              className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${type === 'interview' ? 'premium-gradient text-white shadow-lg' : 'text-muted-foreground hover:text-foreground'}`}
             >
               Mock Interview
             </button>
@@ -115,7 +115,7 @@ function HistoryContent() {
                 history.map((item) => (
                   <motion.div 
                     key={item.id}
-                    className="glass p-6 flex items-center justify-between hover:bg-white/[0.05] transition-all group"
+                    className="glass p-6 flex items-center justify-between hover:bg-muted transition-all group"
                   >
                     <div className="flex items-center gap-6">
                       <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center text-accent">

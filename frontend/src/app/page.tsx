@@ -147,7 +147,7 @@ function HomeContent() {
                     <span>{profile?.points || 0} XP</span>
                     <span className="opacity-40">{(profile?.level || 1) * 100} XP</span>
                   </div>
-                  <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+                  <div className="h-2 bg-muted rounded-full overflow-hidden">
                     <motion.div 
                       initial={{ width: 0 }}
                       animate={{ width: `${(profile?.points % 100) || 0}%` }}
@@ -186,7 +186,7 @@ function HomeContent() {
                   <span className="text-sm font-bold">Xem tất cả thử thách</span>
                   <ArrowRight size={16} />
                 </Link>
-                <div className="h-1 bg-white/5 rounded-full overflow-hidden">
+                <div className="h-1 bg-muted rounded-full overflow-hidden">
                   <div className="h-full bg-yellow-500 w-1/3" /> {/* Mock progress for UI */}
                 </div>
               </div>
@@ -207,11 +207,16 @@ function HomeContent() {
                         <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-                    <XAxis dataKey="name" stroke="rgba(255,255,255,0.3)" fontSize={12} tickLine={false} axisLine={false} />
-                    <YAxis stroke="rgba(255,255,255,0.3)" fontSize={12} tickLine={false} axisLine={false} domain={[0, 100]} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
+                    <XAxis dataKey="name" stroke="var(--chart-axis)" fontSize={12} tickLine={false} axisLine={false} />
+                    <YAxis stroke="var(--chart-axis)" fontSize={12} tickLine={false} axisLine={false} domain={[0, 100]} />
                     <Tooltip 
-                      contentStyle={{ backgroundColor: '#18181b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px' }}
+                      contentStyle={{ 
+                        backgroundColor: 'var(--background)', 
+                        borderColor: 'var(--glass-border)', 
+                        borderRadius: '12px',
+                        color: 'var(--foreground)'
+                      }}
                       itemStyle={{ color: '#6366f1', fontWeight: 'bold' }}
                     />
                     <Area type="monotone" dataKey="score" stroke="#6366f1" strokeWidth={3} fillOpacity={1} fill="url(#colorScore)" />
@@ -246,7 +251,7 @@ function HomeContent() {
                   </Link>
                   <Link 
                     href="/jobs"
-                    className="px-8 py-4 bg-white/5 border border-white/10 hover:bg-white/10 rounded-xl font-bold flex items-center justify-center gap-2 transition-all"
+                    className="px-8 py-4 bg-glass border border-glass-border hover:bg-muted rounded-xl font-bold flex items-center justify-center gap-2 transition-all"
                   >
                     <Briefcase size={18} />
                     Tìm việc phù hợp
@@ -258,9 +263,9 @@ function HomeContent() {
                 <motion.div 
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="mt-8 p-6 bg-black/30 rounded-2xl border border-white/5 flex-1 relative"
+                  className="mt-8 p-6 bg-glass border border-glass-border rounded-2xl flex-1 relative"
                 >
-                  <div className="prose prose-invert max-w-none text-zinc-300 whitespace-pre-wrap leading-relaxed">
+                  <div className="prose prose-zinc dark:prose-invert max-w-none text-muted-foreground whitespace-pre-wrap leading-relaxed">
                     {roadmap}
                   </div>
                 </motion.div>

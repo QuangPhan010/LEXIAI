@@ -519,7 +519,7 @@ Tạo bởi LEXIAI - AI Career Assistant
                         className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border ${
                           selectedCV?.id === cv.id 
                           ? 'bg-accent text-white border-accent shadow-lg shadow-accent/20' 
-                          : 'bg-white/5 border-white/10 hover:border-accent/50'
+                          : 'bg-glass border-glass-border hover:border-accent/50'
                         }`}
                       >
                         <div className="flex flex-col items-start gap-1">
@@ -531,7 +531,7 @@ Tạo bởi LEXIAI - AI Career Assistant
                     {cvHistory.length > 3 && (
                       <button 
                         onClick={() => setIsSelectingCV(true)}
-                        className="px-4 py-2 rounded-xl text-xs font-bold bg-white/5 border border-white/10 hover:bg-white/10 transition-all"
+                        className="px-4 py-2 rounded-xl text-xs font-bold bg-glass border border-glass-border hover:bg-muted transition-all"
                       >
                         Xem tất cả...
                       </button>
@@ -568,7 +568,7 @@ Tạo bởi LEXIAI - AI Career Assistant
               <motion.div 
                 animate={{ rotate: 360 }} 
                 transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                className="absolute inset-0 rounded-full border-4 border-t-accent border-r-transparent border-b-white/10 border-l-transparent"
+                className="absolute inset-0 rounded-full border-4 border-t-accent border-r-transparent border-b-muted border-l-transparent"
               />
               <div className="absolute inset-4 rounded-full bg-accent/20 flex items-center justify-center">
                 <Code2 size={24} className="text-accent animate-pulse" />
@@ -603,7 +603,7 @@ Tạo bởi LEXIAI - AI Career Assistant
                       <p className="text-sm text-muted-foreground line-clamp-2">{project.description}</p>
                       <div className="flex flex-wrap gap-2 pt-2">
                         {(project.toolsAndSkills || []).slice(0, 3).map((tech, i) => (
-                          <span key={i} className="text-[10px] font-bold px-2 py-0.5 bg-white/5 border border-white/10 rounded-full">
+                          <span key={i} className="text-[10px] font-bold px-2 py-0.5 bg-glass border border-glass-border rounded-full">
                             {tech}
                           </span>
                         ))}
@@ -612,7 +612,7 @@ Tạo bởi LEXIAI - AI Career Assistant
                         )}
                       </div>
                     </div>
-                    <div className={`p-2 rounded-lg ${selectedProject?.title === project.title ? 'bg-accent text-white' : 'bg-white/5'}`}>
+                    <div className={`p-2 rounded-lg ${selectedProject?.title === project.title ? 'bg-accent text-white' : 'bg-muted'}`}>
                       <ChevronRight size={18} />
                     </div>
                   </div>
@@ -665,7 +665,7 @@ Tạo bởi LEXIAI - AI Career Assistant
                       </div>
                       <div className="space-y-4">
                         <h4 className="font-bold flex items-center gap-2"><Briefcase size={18} className="text-accent" /> Giá trị sự nghiệp</h4>
-                        <p className="text-sm text-zinc-400 italic leading-relaxed">{selectedProject.relevance}</p>
+                        <p className="text-sm text-muted-foreground italic leading-relaxed">{selectedProject.relevance}</p>
                       </div>
                     </div>
 
@@ -674,7 +674,7 @@ Tạo bởi LEXIAI - AI Career Assistant
                         <h4 className="font-bold flex items-center gap-2"><ListChecks size={18} className="text-accent" /> Tính năng chính (User Stories)</h4>
                         <div className="grid grid-cols-1 gap-3">
                           {(selectedProject.userStories || []).map((story, i) => (
-                            <div key={i} className="flex gap-3 items-start bg-white/5 p-4 rounded-xl border border-white/10">
+                            <div key={i} className="flex gap-3 items-start bg-glass p-4 rounded-xl border border-glass-border">
                               <div className="w-5 h-5 rounded-full bg-accent/20 flex items-center justify-center shrink-0 mt-0.5">
                                 <div className="w-2 h-2 rounded-full bg-accent" />
                               </div>
@@ -700,7 +700,7 @@ Tạo bởi LEXIAI - AI Career Assistant
                       </div>
                     </div>
 
-                    <div className="pt-8 border-t border-white/10 flex justify-end">
+                    <div className="pt-8 border-t border-glass-border flex justify-end">
                       <button 
                         onClick={() => generateBlueprint(selectedProject)}
                         className="flex items-center gap-2 px-8 py-4 premium-gradient rounded-2xl font-bold text-lg shadow-xl hover-glow transition-all group"
@@ -743,12 +743,12 @@ Tạo bởi LEXIAI - AI Career Assistant
             >
               <button 
                 onClick={() => setIsSelectingCV(false)}
-                className="absolute top-6 right-6 p-2 rounded-full hover:bg-white/10 transition-all z-10"
+                className="absolute top-6 right-6 p-2 rounded-full hover:bg-muted transition-all z-10"
               >
                 <X size={24} />
               </button>
 
-              <div className="p-8 border-b border-white/5">
+              <div className="p-8 border-b border-glass-border">
                 <h2 className="text-2xl font-bold">Lịch sử CV của bạn</h2>
                 <p className="text-muted-foreground text-sm">Chọn một CV để làm cơ sở gợi ý Portfolio.</p>
               </div>
@@ -764,7 +764,7 @@ Tạo bởi LEXIAI - AI Career Assistant
                     className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all border ${
                       selectedCV?.id === cv.id 
                       ? 'bg-accent/10 border-accent' 
-                      : 'bg-white/5 border-white/5 hover:bg-white/10'
+                      : 'bg-glass border-glass-border hover:bg-muted'
                     }`}
                   >
                     <div className="flex items-center gap-4 text-left">
@@ -785,7 +785,7 @@ Tạo bởi LEXIAI - AI Career Assistant
                 ))}
               </div>
 
-              <div className="p-6 bg-muted/50 border-t border-white/5 flex justify-end">
+              <div className="p-6 bg-muted border-t border-glass-border flex justify-end">
                 <button 
                   onClick={() => setIsSelectingCV(false)}
                   className="px-8 py-3 premium-gradient rounded-xl font-bold transition-all"

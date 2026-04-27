@@ -619,7 +619,7 @@ function MockInterviewContent() {
               animate={{ scale: 1, y: 0 }}
               className="bg-background border border-border w-full max-w-2xl max-h-[80vh] rounded-3xl overflow-hidden flex flex-col shadow-2xl"
             >
-              <div className="p-8 border-b border-white/5 premium-gradient">
+              <div className="p-8 border-b border-glass-border premium-gradient">
                 <div className="flex items-center gap-3 mb-2">
                   <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
                     <Trophy className="text-white" size={24} />
@@ -669,7 +669,7 @@ export default function MockInterviewPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-t-accent border-white/10 rounded-full animate-spin" />
+        <div className="w-12 h-12 border-4 border-t-accent border-muted rounded-full animate-spin" />
       </div>
     }>
       <MockInterviewContent key={userKey} />

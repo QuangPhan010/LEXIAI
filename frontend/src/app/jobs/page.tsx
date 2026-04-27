@@ -124,10 +124,10 @@ function JobMatcherContent() {
               placeholder="Tìm kiếm vị trí, công ty..." 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-xl py-4 pl-12 pr-4 focus:outline-none focus:ring-1 focus:ring-accent transition-all"
+              className="w-full bg-glass border border-glass-border rounded-xl py-4 pl-12 pr-4 focus:outline-none focus:ring-1 focus:ring-accent transition-all"
             />
           </div>
-          <button className="px-8 py-4 bg-white/5 border border-white/10 rounded-xl font-bold flex items-center gap-2 hover:bg-white/10 transition-all">
+          <button className="px-8 py-4 bg-glass border border-glass-border rounded-xl font-bold flex items-center gap-2 hover:bg-muted transition-all">
             <Filter size={20} /> Lọc
           </button>
         </div>
@@ -139,7 +139,7 @@ function JobMatcherContent() {
               <motion.div 
                 key={job.id}
                 layoutId={job.id}
-                className={`glass p-6 border-l-4 transition-all cursor-pointer ${matchingId === job.id ? 'border-l-accent bg-accent/5' : 'border-l-transparent hover:border-l-white/20'}`}
+                className={`glass p-6 border-l-4 transition-all cursor-pointer ${matchingId === job.id ? 'border-l-accent bg-accent/5' : 'border-l-transparent hover:border-l-glass-border'}`}
                 onClick={() => checkMatch(job)}
               >
                 <div className="flex justify-between items-start">
@@ -154,9 +154,9 @@ function JobMatcherContent() {
                     {job.type}
                   </div>
                 </div>
-                <p className="mt-4 text-sm text-zinc-400 line-clamp-2">{job.description}</p>
+                <p className="mt-4 text-sm text-muted-foreground line-clamp-2">{job.description}</p>
                 <div className="mt-6 flex items-center justify-between">
-                  <span className="text-sm font-bold text-white">{job.salary}</span>
+                  <span className="text-sm font-bold text-foreground">{job.salary}</span>
                   <button className="flex items-center gap-2 text-xs font-bold text-accent hover:underline">
                     Chi tiết <ChevronRight size={14} />
                   </button>
@@ -170,7 +170,7 @@ function JobMatcherContent() {
             <div className="sticky top-40 glass p-8 space-y-8 border-accent/20">
               {!matchingId ? (
                 <div className="text-center py-20 space-y-4">
-                  <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto text-muted-foreground opacity-20">
+                  <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto text-muted-foreground opacity-20">
                     <Briefcase size={32} />
                   </div>
                   <p className="text-sm text-muted-foreground italic">Chọn một công việc để AI phân tích độ phù hợp với CV của bạn.</p>
@@ -201,7 +201,7 @@ function JobMatcherContent() {
                           <CheckCircle2 size={16} />
                           <span className="text-xs font-bold uppercase">Nhận xét từ AI</span>
                         </div>
-                        <p className="text-sm text-zinc-300 leading-relaxed italic">"{matchResult.feedback}"</p>
+                        <p className="text-sm text-muted-foreground leading-relaxed italic">"{matchResult.feedback}"</p>
                       </div>
 
                       <button className="w-full py-4 premium-gradient rounded-xl font-bold shadow-lg hover-glow transition-all flex items-center justify-center gap-2">

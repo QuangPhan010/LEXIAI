@@ -13,7 +13,7 @@ import dynamic from 'next/dynamic';
 
 const SkillChart = dynamic(() => import('@/components/SkillChart'), { 
   loading: () => <div className="w-full h-[320px] flex items-center justify-center">
-    <div className="w-8 h-8 border-4 border-t-accent border-white/10 rounded-full animate-spin" />
+    <div className="w-8 h-8 border-4 border-t-accent border-muted rounded-full animate-spin" />
   </div>
 });
 
@@ -375,7 +375,7 @@ function CVAnalyzerContent() {
 
         {!result && !loading && (
           <motion.div layoutId="upload-zone" className="max-w-2xl mx-auto">
-            <div className="glass p-12 border-dashed border-2 border-white/10 flex flex-col items-center justify-center space-y-6 hover:border-accent/50 transition-all group cursor-pointer relative overflow-hidden">
+            <div className="glass p-12 border-dashed border-2 border-glass-border flex flex-col items-center justify-center space-y-6 hover:border-accent/50 transition-all group cursor-pointer relative overflow-hidden">
               <div className="w-20 h-20 rounded-full bg-accent/10 flex items-center justify-center group-hover:scale-110 transition-all duration-500">
                 <Upload size={32} className="text-accent" />
               </div>
@@ -385,7 +385,7 @@ function CVAnalyzerContent() {
               </div>
               <input type="file" accept=".pdf,.docx" onChange={handleFileUpload} className="absolute inset-0 opacity-0 cursor-pointer" />
               {file && (
-                <div className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-lg border border-white/10">
+                <div className="flex items-center gap-2 px-4 py-2 bg-glass rounded-lg border border-glass-border">
                   <FileText size={16} className="text-accent" />
                   <span className="text-sm font-medium">{file.name}</span>
                 </div>
@@ -393,7 +393,7 @@ function CVAnalyzerContent() {
             </div>
             {file && (
               <div className="mt-6 space-y-4">
-                <div className="bg-input p-4 border border-black/5 dark:border-white/10 rounded-2xl">
+                <div className="bg-muted p-4 border border-glass-border rounded-2xl">
                   <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2 block">Mô tả công việc (JD) - Tùy chọn</label>
                   <textarea value={jd} onChange={(e) => setJd(e.target.value)} placeholder="Dán JD vào đây để AI so khớp độ phù hợp..." className="w-full h-32 bg-transparent border-none focus:ring-0 text-sm placeholder:text-muted-foreground/50 resize-none text-foreground" />
                 </div>
@@ -406,7 +406,7 @@ function CVAnalyzerContent() {
         {loading && (
           <div className="flex flex-col items-center justify-center space-y-8 py-20">
             <div className="relative w-24 h-24">
-              <motion.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: "linear" }} className="absolute inset-0 rounded-full border-4 border-t-accent border-r-transparent border-b-white/10 border-l-transparent" />
+              <motion.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: "linear" }} className="absolute inset-0 rounded-full border-4 border-t-accent border-r-transparent border-b-muted border-l-transparent" />
               <div className="absolute inset-4 rounded-full bg-accent/20 flex items-center justify-center"><FileText size={24} className="text-accent animate-pulse" /></div>
             </div>
             <div className="text-center space-y-2">
@@ -442,7 +442,7 @@ function CVAnalyzerContent() {
                 >
                   <Zap size={18} /> Sửa trực tiếp trên PDF
                 </button>
-                <button onClick={() => setIsEditing(!isEditing)} className="px-6 py-3 rounded-xl bg-white/5 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/10 transition-all font-bold flex items-center gap-2">
+                <button onClick={() => setIsEditing(!isEditing)} className="px-6 py-3 rounded-xl bg-glass border border-glass-border hover:bg-muted transition-all font-bold flex items-center gap-2">
                   {isEditing ? 'Đóng trình soạn thảo' : 'Mở trình soạn thảo & Xuất PDF'}
                 </button>
                 */}
@@ -518,7 +518,7 @@ function CVAnalyzerContent() {
                               <span className="font-bold text-sm text-yellow-500">{gap.skill}</span>
                               <span className="text-[10px] uppercase font-bold text-yellow-500/60">{gap.importance} priority</span>
                             </div>
-                            <p className="text-xs text-zinc-400">{gap.description}</p>
+                            <p className="text-xs text-muted-foreground">{gap.description}</p>
                           </div>
                         ))}
                       </div>
@@ -533,7 +533,7 @@ function CVAnalyzerContent() {
                   <div className="space-y-4">
                     <AnimatePresence>
                       {result.issues.map((issue, idx) => (
-                        <motion.div key={idx} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: idx * 0.1 }} className="glass p-6 hover:bg-white/[0.05] transition-all group border-l-4 border-l-transparent hover:border-l-accent">
+                        <motion.div key={idx} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: idx * 0.1 }} className="glass p-6 hover:bg-accent/5 transition-all group border-l-4 border-l-transparent hover:border-l-accent">
                           <div className="flex gap-4">
                             <div className={`mt-1 h-2 w-2 rounded-full flex-shrink-0 ${issue.severity === 'high' ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]' : issue.severity === 'medium' ? 'bg-yellow-500' : 'bg-blue-500'}`} />
                             <div className="flex-1 space-y-4">
@@ -541,7 +541,7 @@ function CVAnalyzerContent() {
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="bg-red-500/5 rounded-lg p-3 border border-red-500/10"><span className="text-[10px] font-black uppercase text-red-500 block mb-1">Vấn đề phát hiện</span><p className="text-sm text-foreground">{issue.problem}</p></div>
                                 <div className="bg-green-500/10 dark:bg-green-500/5 rounded-lg p-3 border border-green-500/20 relative"><span className="text-[10px] font-black uppercase text-green-600 dark:text-green-500 block mb-1">Gợi ý từ AI</span><p className="text-sm font-bold text-foreground leading-relaxed">{issue.suggestion}</p>
-                                  <button onClick={() => handleApply(issue.suggestion, idx)} className={`absolute top-2 right-2 p-1.5 rounded-lg transition-all ${appliedIndex === idx ? 'bg-green-500 text-white' : 'hover:bg-black/10 dark:hover:bg-white/10 text-muted-foreground hover:text-foreground'}`}>{appliedIndex === idx ? <ClipboardCheck size={14} /> : <Zap size={14} />}</button>
+                                  <button onClick={() => handleApply(issue.suggestion, idx)} className={`absolute top-2 right-2 p-1.5 rounded-lg transition-all ${appliedIndex === idx ? 'bg-green-500 text-white' : 'hover:bg-muted text-muted-foreground hover:text-foreground'}`}>{appliedIndex === idx ? <ClipboardCheck size={14} /> : <Zap size={14} />}</button>
                                 </div>
                               </div>
                             </div>

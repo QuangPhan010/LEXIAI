@@ -26,10 +26,10 @@ export default function SkillChart({ data }: SkillChartProps) {
           data={data}
           margin={{ top: 10, right: 30, bottom: 10, left: 30 }}
         >
-          <PolarGrid stroke="rgba(255,255,255,0.1)" />
+          <PolarGrid stroke="var(--chart-grid)" />
           <PolarAngleAxis 
             dataKey="subject" 
-            tick={{ fill: '#94a3b8', fontSize: 11, fontWeight: 600 }} 
+            tick={{ fill: 'var(--muted-foreground)', fontSize: 11, fontWeight: 600 }} 
           />
           <PolarRadiusAxis 
             angle={30} 
