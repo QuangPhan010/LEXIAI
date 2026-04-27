@@ -112,7 +112,7 @@ function CareerRoadmapContent() {
                 value={targetRole}
                 onChange={(e) => setTargetRole(e.target.value)}
                 suppressHydrationWarning
-                placeholder="VD: Senior Frontend Engineer, Product Manager..."
+                placeholder="VD: Kế toán trưởng, Quản trị kinh doanh, Marketing Manager..."
                 className="w-full bg-white/5 border border-white/10 rounded-xl px-6 py-4 text-lg focus:outline-none focus:ring-1 focus:ring-accent transition-all"
               />
             </div>

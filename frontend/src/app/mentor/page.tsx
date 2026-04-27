@@ -23,9 +23,9 @@ interface MentorSession {
 
 const SUGGESTED_PROMPTS = [
   "Làm sao để đàm phán lương hiệu quả?",
-  "Kỹ năng nào quan trọng nhất cho Frontend Engineer hiện nay?",
+  "Kế toán trưởng cần những chứng chỉ gì?",
   "Cách chuẩn bị cho phỏng vấn văn hóa doanh nghiệp?",
-  "Mô tả công việc Senior Backend thường yêu cầu gì?"
+  "Quản trị kinh doanh thì nên bắt đầu từ đâu?"
 ];
 
 function AIMentorContent() {

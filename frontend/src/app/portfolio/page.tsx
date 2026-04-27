@@ -136,24 +136,30 @@ function PortfolioContent() {
       });
 
       const prompt = `
-        Bạn là một chuyên gia tư vấn sự nghiệp đa ngành. Dựa trên nội dung CV và Lộ trình sự nghiệp sau đây, hãy gợi ý 3 dự án thực hành (Portfolio Projects) phù hợp với chuyên môn của ứng viên (có thể là IT, Kế toán, Marketing, Quản trị, v.v.) để ứng viên có thể thực hiện nhằm lấp đầy các lỗ hổng kỹ năng và đạt được mục tiêu sự nghiệp.
+        Bạn là một Elite Career Architect có khả năng thiết kế lộ trình thực hành cho MỌI ngành nghề trên thế giới. 
+        Dựa trên nội dung CV và Lộ trình sự nghiệp sau đây, hãy thiết kế 3 dự án thực tế (Portfolio Projects) mang tính ĐỘT PHÁ để ứng viên chứng minh năng lực chuyên môn của mình với nhà tuyển dụng.
         
         NỘI DUNG CV: ${cvText}
-        LỘ TRÌNH SỰ NGHIỆP: ${roadmapText || 'Chưa có lộ trình cụ thể, hãy dựa trên CV.'}
+        LỘ TRÌNH SỰ NGHIỆP: ${roadmapText || 'Dựa trên kinh nghiệm trong CV.'}
         
+        NGUYÊN TẮC THIẾT KẾ DỰ ÁN:
+        1. Tính Thực Chiến: Dự án phải giải quyết một bài toán có thật trong ngành đó.
+        2. Sản Phẩm Hữu Hình (Tangible Assets): Kết quả dự án phải là một thứ gì đó có thể trình bày được (VD: Code, Bản kế hoạch, Bộ hồ sơ, Quy trình, Bản vẽ, Giáo án...).
+        3. Tăng Trưởng Kỹ Năng: Phải sử dụng các công cụ và kỹ năng mà ứng viên đang thiếu hoặc cần nâng cao.
+
         Yêu cầu kết quả trả về bằng định dạng JSON là một mảng các đối tượng:
         [
           {
-            "title": "Tên dự án ấn tượng và chuyên nghiệp",
-            "description": "Mô tả ngắn gọn về bài toán thực tế mà dự án giải quyết",
-            "toolsAndSkills": ["Công cụ 1", "Kỹ năng 1", "Công nghệ 1"],
-            "relevance": "Tại sao dự án này lại quan trọng cho sự nghiệp và giúp ích gì cho mục tiêu của ứng viên?",
-            "userStories": ["Mục tiêu/Tính năng 1", "Mục tiêu/Tính năng 2"],
-            "steps": ["Bước thực hiện 1", "Bước thực hiện 2", "Bước thực hiện 3"]
+            "title": "Tên dự án chuyên nghiệp",
+            "description": "Bài toán thực tế dự án giải quyết",
+            "toolsAndSkills": ["Công cụ/Kỹ năng sử dụng"],
+            "relevance": "Giá trị chiến lược của dự án này đối với sự nghiệp ứng viên",
+            "userStories": ["Các yêu cầu/tính năng chính của dự án"],
+            "steps": ["Lộ trình thực hiện chi tiết"]
           }
         ]
         
-        Lưu ý: Nếu ứng viên không thuộc ngành IT, hãy gợi ý các dự án mang tính nghiệp vụ chuyên môn (VD: Kế toán: báo cáo quản trị; Quản trị: tối ưu quy trình; Marketing: chiến dịch truyền thông).
+        Lưu ý: Không bị giới hạn bởi bất kỳ ngành nghề nào. Hãy tùy biến nội dung cực kỳ sâu theo chuyên môn trong CV (Từ Nghệ thuật, Y tế, Luật, Giáo dục đến Kỹ thuật, Công an, v.v.).
         Ngôn ngữ: Tiếng Việt.
       `;
 
@@ -212,29 +218,28 @@ function PortfolioContent() {
       });
 
       const prompt = `
-        Hãy tạo một bản kế hoạch triển khai chi tiết (Detailed Implementation Plan) cho dự án sau đây:
+        Hãy tạo một bản kế hoạch triển khai chi tiết (Detailed Implementation Plan) cho dự án sau đây. 
+        Nhiệm vụ của bạn là cung cấp "Xương sống" kỹ thuật hoặc chuyên môn để ứng viên có thể bắt tay vào làm ngay.
+
         Tên dự án: ${project.title}
         Mô tả: ${project.description}
         Công cụ & Kỹ năng: ${(project.toolsAndSkills || []).join(', ')}
         
         Yêu cầu kết quả trả về bằng định dạng JSON:
         {
-          "implementationGuide": "Hướng dẫn cấu trúc/tổ chức dự án hoặc sơ đồ quy trình thực hiện",
-          "preRequisites": ["Bước chuẩn bị 1", "Công cụ cần cài đặt/có sẵn 1"],
-          "dataDesign": "Mô tả cách quản lý dữ liệu, các bảng tính, hoặc cơ sở dữ liệu cần thiết",
+          "implementationGuide": "Hướng dẫn chi tiết về cấu trúc thư mục, quy trình các bước hoặc sơ đồ thực hiện dự án",
+          "preRequisites": ["Các phần mềm cần có", "Tài liệu cần đọc", "Dữ liệu cần chuẩn bị"],
+          "dataDesign": "Thiết kế hệ thống dữ liệu, các biến số chính, hoặc các hạng mục thông tin cần quản lý",
           "keyDeliverables": [
             {
-              "title": "Tên thành phần (VD: File báo cáo, Đoạn mã logic, Biểu mẫu)",
-              "content": "Nội dung chi tiết (Mã nguồn nếu là IT, Công thức/Mẫu nếu là ngành khác)",
-              "explanation": "Giải thích vai trò của thành phần này"
+              "title": "Tên thành phần cốt lõi (VD: Module X, Bản thảo Y, Quy trình Z)",
+              "content": "NỘI DUNG CHI TIẾT NHẤT CỦA THÀNH PHẦN NÀY. Nếu là IT: Code; Nếu là Luật: Các điều khoản; Nếu là Giáo viên: Giáo án mẫu; Nếu là Kinh doanh: Công thức/Mẫu báo cáo... Hãy trình bày dưới dạng text hoặc code block chuyên nghiệp.",
+              "explanation": "Tại sao phần này lại quan trọng và cách sử dụng nó"
             }
           ]
         }
         
-        Lưu ý: 
-        - Nếu là ngành IT: content là mã nguồn (Code).
-        - Nếu là ngành khác (Kế toán, Kinh doanh...): content là các công thức Excel, quy trình chi tiết, hoặc mẫu văn bản.
-        Ngôn ngữ: Tiếng Việt.
+        Ngôn ngữ: Tiếng Việt. Hãy thể hiện sự am hiểu sâu sắc về ngành nghề của dự án này.
       `;
 
       let aiResponseText = "";
