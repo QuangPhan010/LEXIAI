@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useTheme } from 'next-themes';
-import { Sun, Moon, LogOut, Settings, User as UserIcon, Menu, X, ChevronDown, Sparkles, Briefcase, History, FileText, Bot, Map, Search, Video } from 'lucide-react';
+import { Sun, Moon, LogOut, Settings, User as UserIcon, Menu, X, ChevronDown, Sparkles, Briefcase, History, FileText, Bot, Map, Search, Video, Rocket } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import APIConfigModal from './APIConfigModal';
 
@@ -84,6 +84,7 @@ export default function Navbar() {
                       { name: 'Viết lách', href: '/writing', icon: <FileText size={14} />, desc: 'Soạn thảo nội dung bằng AI' },
                       { name: 'AI Mentor', href: '/mentor', icon: <Bot size={14} />, desc: 'Tư vấn sự nghiệp 24/7' },
                       { name: 'Lộ trình học', href: '/roadmap', icon: <Map size={14} />, desc: 'Kế hoạch phát triển sự nghiệp' },
+                      { name: 'Dự án thực tế', href: '/portfolio', icon: <Rocket size={14} />, desc: 'Xây dựng Portfolio thực chiến' },
                     ].map((item) => (
                       <Link 
                         key={item.href} 
@@ -110,7 +111,7 @@ export default function Navbar() {
                   <div className="bg-background p-3 min-w-[220px] space-y-1 shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-black/5 dark:border-white/10 rounded-2xl">
                     {[
                       { name: 'Phân tích CV', href: '/cv', icon: <Search size={14} />, desc: 'Tối ưu chỉ số ATS' },
-                      { name: 'Phỏng vấn AI', href: '/interview', icon: <Video size={14} />, desc: 'Mô phỏng phỏng vấn thực tế' },
+                      { name: 'Phỏng vấn AI', href: '/interview', icon: <Video size={14} />, desc: 'Mô phỏng phỏng vấn & Văn hóa công ty' },
                       { name: 'Việc làm', href: '/jobs', icon: <Briefcase size={14} />, desc: 'Tìm kiếm cơ hội phù hợp' },
                     ].map((item) => (
                       <Link 
@@ -229,6 +230,7 @@ export default function Navbar() {
                         { name: 'Viết lách', href: '/writing' },
                         { name: 'AI Mentor', href: '/mentor' },
                         { name: 'Lộ trình học', href: '/roadmap' },
+                        { name: 'Dự án thực tế', href: '/portfolio' },
                       ].map((link) => (
                         <Link 
                           key={link.href}

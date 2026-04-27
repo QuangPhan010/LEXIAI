@@ -22,6 +22,7 @@ function MockInterviewContent() {
   const [hint, setHint] = useState<string | null>(null);
   const [isStarted, setIsStarted] = useState(false);
   const [jd, setJd] = useState('');
+  const [companyName, setCompanyName] = useState('');
   const [initialPrompt, setInitialPrompt] = useState('');
   const [evaluation, setEvaluation] = useState<string | null>(null);
   const [showEvaluation, setShowEvaluation] = useState(false);
@@ -104,7 +105,8 @@ function MockInterviewContent() {
 
       const prompt = selectedLang === 'vi' 
         ? `
-          Bạn là một nhà tuyển dụng chuyên nghiệp. 
+          Bạn là một nhà tuyển dụng chuyên nghiệp${companyName ? ` đại diện cho công ty "${companyName}"` : ''}. 
+          ${companyName ? `Hãy đóng vai người phỏng vấn của ${companyName}, áp dụng văn hóa, giá trị cốt lõi và phong cách đặt câu hỏi đặc trưng của công ty này.` : ''}
           Dựa trên nội dung CV sau đây ${jd ? 'và Mô tả công việc (JD) được cung cấp' : ''}, hãy bắt đầu một buổi phỏng vấn thử.
           Hãy bắt đầu bằng lời chào và một câu hỏi phỏng vấn đầu tiên liên quan đến kinh nghiệm hoặc kỹ năng trong CV.
           Giữ văn phong chuyên nghiệp nhưng cởi mở. 
@@ -112,9 +114,11 @@ function MockInterviewContent() {
 
           NỘI DUNG CV: ${cvText}
           ${jd ? `MÔ TẢ CÔNG VIỆC (JD): ${jd}` : ''}
+          ${companyName ? `TÊN CÔNG TY: ${companyName}` : ''}
         `
         : `
-          You are a professional interviewer. 
+          You are a professional interviewer${companyName ? ` representing "${companyName}"` : ''}. 
+          ${companyName ? `Act as an interviewer from ${companyName}, adopting the company's culture, core values, and typical interviewing style.` : ''}
           Based on the following CV content ${jd ? 'and the provided Job Description (JD)' : ''}, start a mock interview.
           Begin with a greeting and the first interview question related to the experience or skills in the CV.
           Keep the tone professional but welcoming. 
@@ -122,6 +126,7 @@ function MockInterviewContent() {
 
           CV CONTENT: ${cvText}
           ${jd ? `JOB DESCRIPTION (JD): ${jd}` : ''}
+          ${companyName ? `COMPANY NAME: ${companyName}` : ''}
         `;
 
       setInitialPrompt(prompt);
@@ -296,14 +301,22 @@ function MockInterviewContent() {
           TRANSCRIPT BUỔI PHỎNG VẤN:
           ${transcript}
 
-          Hãy chia nhỏ thành các mục: 1. Điểm mạnh, 2. Điểm cần cải thiện, 3. Lời khuyên & Tài liệu tham khảo. 
+          Hãy chia nhỏ thành các mục: 
+          1. Điểm mạnh.
+          2. Điểm cần cải thiện.
+          ${companyName ? `3. Đánh giá độ phù hợp văn hóa (Culture Fit) với ${companyName}: Phân tích xem ứng viên có thể hiện được các giá trị mà ${companyName} tìm kiếm không.` : ''}
+          4. Lời khuyên & Tài liệu tham khảo. 
           Văn phong chuyên nghiệp, khích lệ. Chỉ trả về nội dung nhận xét bằng tiếng Việt.`
         : `Based on the following interview transcript, please provide a detailed and objective evaluation of the candidate's performance.
           
           INTERVIEW TRANSCRIPT:
           ${transcript}
 
-          Break it down into: 1. Strengths, 2. Areas for Improvement, 3. Advice & Reference Materials. 
+          Break it down into: 
+          1. Strengths.
+          2. Areas for Improvement.
+          ${companyName ? `3. Culture Fit Assessment for ${companyName}: Analyze if the candidate demonstrates the values that ${companyName} seeks.` : ''}
+          4. Advice & Reference Materials. 
           Keep the tone professional and encouraging. Return ONLY the evaluation content in English.`;
       
       let result;
@@ -532,16 +545,33 @@ function MockInterviewContent() {
                   <FileText size={20} />
                 </div>
                 <div>
-                  <h3 className="font-bold">Mô tả công việc (JD)</h3>
-                  <p className="text-xs text-muted-foreground">Tùy chọn: Giúp AI đặt câu hỏi sát thực tế hơn.</p>
+                  <h3 className="font-bold">Thông tin ứng tuyển</h3>
+                  <p className="text-xs text-muted-foreground">Tùy chọn: Giúp AI cá nhân hóa trải nghiệm.</p>
                 </div>
               </div>
-              <textarea 
-                value={jd}
-                onChange={(e) => setJd(e.target.value)}
-                placeholder="Dán JD hoặc yêu cầu công việc tại đây..."
-                className="flex-1 bg-input border border-border rounded-xl p-4 text-sm focus:outline-none focus:ring-1 focus:ring-accent transition-all resize-none text-foreground"
-              />
+              
+              <div className="space-y-4 flex-1 flex flex-col">
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Tên công ty</label>
+                  <input 
+                    type="text"
+                    value={companyName}
+                    onChange={(e) => setCompanyName(e.target.value)}
+                    placeholder="VD: Google, FPT, VNG..."
+                    className="w-full bg-input border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-accent transition-all text-foreground"
+                  />
+                </div>
+
+                <div className="space-y-2 flex-1 flex flex-col">
+                  <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Mô tả công việc (JD)</label>
+                  <textarea 
+                    value={jd}
+                    onChange={(e) => setJd(e.target.value)}
+                    placeholder="Dán JD hoặc yêu cầu công việc tại đây..."
+                    className="flex-1 min-h-[150px] bg-input border border-border rounded-xl p-4 text-sm focus:outline-none focus:ring-1 focus:ring-accent transition-all resize-none text-foreground"
+                  />
+                </div>
+              </div>
             </div>
 
             {/* Right: Language Selection */}
