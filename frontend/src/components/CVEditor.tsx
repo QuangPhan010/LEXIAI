@@ -84,10 +84,11 @@ export default function CVEditor({ initialContent }: CVEditorProps) {
       `;
 
       const result = await model.generateContent(prompt);
-      const optimizedText = result.response.text();
+      let optimizedText = result.response.text();
       
-      // Update editor with HTML structure if possible, or just text
-      // For simplicity, we replace everything
+      // Normalize to NFC to fix Vietnamese font/tone issues
+      optimizedText = optimizedText.normalize('NFC');
+      
       editor.commands.setContent(optimizedText);
     } catch (error: any) {
       console.error("Lỗi tối ưu AI:", error);
@@ -250,7 +251,7 @@ export default function CVEditor({ initialContent }: CVEditorProps) {
       }`}>
         <div className={template !== 'dark' ? 'editor-light' : ''}>
           <EditorContent editor={editor} className={
-            template === 'modern' ? 'font-serif' : ''
+            template === 'modern' ? 'font-sans' : ''
           } />
         </div>
       </div>

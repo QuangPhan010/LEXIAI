@@ -55,16 +55,34 @@ function HistoryContent() {
     }
   };
 
-  const deleteHistory = async (id: number) => {
+  const deleteHistory = async (id: number, itemName?: string) => {
     if (!confirm('Bạn có chắc muốn xóa bản ghi này?')) return;
     const token = localStorage.getItem('access_token');
+    const username = localStorage.getItem('username') || 'guest';
     const endpoint = type === 'cv' ? 'history/' : 'interviews/';
+    
     try {
-      await fetch(`${API_BASE_URL}/${endpoint}${id}/`, {
+      const res = await fetch(`${API_BASE_URL}/${endpoint}${id}/`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
-      setHistory(history.filter(item => item.id !== id));
+
+      if (res.ok) {
+        setHistory(history.filter(item => item.id !== id));
+        
+        // Nếu là xóa CV, kiểm tra xem có cần xóa LocalStorage không
+        if (type === 'cv') {
+          const lastResult = localStorage.getItem(`last_cv_result_${username}`);
+          if (lastResult) {
+            const parsed = JSON.parse(lastResult);
+            // Nếu tên file trùng khớp, xóa luôn cache
+            if (parsed.file_name === itemName || history.find(h => h.id === id)?.file_name === itemName) {
+              localStorage.removeItem(`last_cv_result_${username}`);
+              localStorage.removeItem(`last_cv_text_${username}`);
+            }
+          }
+        }
+      }
     } catch (error) {
       console.error(error);
     }
@@ -141,7 +159,7 @@ function HistoryContent() {
                     </div>
                     <div className="flex items-center gap-4">
                       <button 
-                        onClick={() => deleteHistory(item.id)}
+                        onClick={() => deleteHistory(item.id, item.file_name)}
                         className="p-2 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all"
                       >
                         <Trash2 size={18} />
