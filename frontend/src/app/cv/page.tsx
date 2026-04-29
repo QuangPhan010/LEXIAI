@@ -143,8 +143,9 @@ function CVAnalyzerContent() {
   const [appliedIndex, setAppliedIndex] = useState<number | null>(null);
   const [jd, setJd] = useState('');
   const [extractedText, setExtractedText] = useState('');
-  // const [isEditing, setIsEditing] = useState(false);
-  // const [isDirectEditing, setIsDirectEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [isDirectEditing, setIsDirectEditing] = useState(false);
   const searchParams = useSearchParams();
 
   const loadHistory = async (id: string) => {
@@ -481,17 +482,12 @@ function CVAnalyzerContent() {
                 >
                   <PlusCircle size={18} /> Phân tích CV mới
                 </button>
-                {/* 
                 <button 
-                  onClick={() => setIsDirectEditing(true)} 
-                  className="px-6 py-3 rounded-xl bg-accent/20 border border-accent/30 hover:bg-accent/30 text-accent transition-all font-bold flex items-center gap-2 shadow-lg"
+                  onClick={() => setIsEditing(!isEditing)} 
+                  className="px-6 py-3 rounded-xl bg-glass border border-glass-border hover:bg-muted transition-all font-bold flex items-center gap-2"
                 >
-                  <Zap size={18} /> Sửa trực tiếp trên PDF
-                </button>
-                <button onClick={() => setIsEditing(!isEditing)} className="px-6 py-3 rounded-xl bg-glass border border-glass-border hover:bg-muted transition-all font-bold flex items-center gap-2">
                   {isEditing ? 'Đóng trình soạn thảo' : 'Mở trình soạn thảo & Xuất PDF'}
                 </button>
-                */}
               </div>
             </div>
 
