@@ -1,0 +1,46 @@
+{
+  "manifest_version": 3,
+  "name": "LexiAI - AI JD Analyzer",
+  "version": "1.0",
+  "description": "Analyze Job Descriptions on any website using LexiAI.",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting",
+    "tabs"
+  ],
+  "host_permissions": [
+    "https://*.linkedin.com/*",
+    "https://*.indeed.com/*",
+    "https://*.topcv.vn/*",
+    "https://*.vietnamworks.com/*",
+    "https://*.careerbuilder.vn/*",
+    "https://*.vercel.app/*",
+    "http://localhost/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.linkedin.com/*",
+        "https://*.indeed.com/*",
+        "https://*.topcv.vn/*",
+        "https://*.vietnamworks.com/*",
+        "https://*.careerbuilder.vn/*"
+      ],
+      "js": ["content.js"]
+    }
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}
