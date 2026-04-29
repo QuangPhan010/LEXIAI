@@ -6,7 +6,7 @@ import { NotificationService } from '@/lib/notifications';
 export default function PWAUpdater() {
   useEffect(() => {
     // Register Service Worker for PWA
-    if ('serviceWorker' in navigator && window.workbox !== undefined) {
+    if ('serviceWorker' in navigator && (window as any).workbox !== undefined) {
       // The PWA plugin handles registration, we just need to ensure it's there
     }
 
