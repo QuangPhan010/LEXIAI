@@ -28,7 +28,7 @@ jobs:
       - name: Lint
         run: |
           cd frontend
-          npm run lint
+          npx next lint
       - name: Build
         run: |
           cd frontend

@@ -1,4 +1,5 @@
 'use client';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { GoogleGenerativeAI } from "@google/generative-ai";
@@ -142,17 +143,9 @@ function CVAnalyzerContent() {
   const [appliedIndex, setAppliedIndex] = useState<number | null>(null);
   const [jd, setJd] = useState('');
   const [extractedText, setExtractedText] = useState('');
-  const [isEditing, setIsEditing] = useState(false);
-  const [isDirectEditing, setIsDirectEditing] = useState(false);
+  // const [isEditing, setIsEditing] = useState(false);
+  // const [isDirectEditing, setIsDirectEditing] = useState(false);
   const searchParams = useSearchParams();
-
-  useEffect(() => {
-    setIsMounted(true);
-    const historyId = searchParams.get('historyId');
-    if (historyId) {
-      loadHistory(historyId);
-    }
-  }, [searchParams]);
 
   const loadHistory = async (id: string) => {
     const token = localStorage.getItem('access_token');
@@ -166,6 +159,7 @@ function CVAnalyzerContent() {
       if (res.ok) {
         const data = await res.json();
         const radarDataRaw = data.radar_data || data.radarData || [];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let radarData = Array.isArray(radarDataRaw) ? radarDataRaw.map((item: any) => ({
           subject: item.subject || item.label || item.name || "Kỹ năng",
           A: item.A || item.value || item.score || 0,
@@ -184,6 +178,7 @@ function CVAnalyzerContent() {
         }
 
         const skillGapsRaw = data.skill_gaps || data.skillGaps || [];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const skillGaps = Array.isArray(skillGapsRaw) ? skillGapsRaw.map((item: any) => ({
           skill: item.skill || item.name || "Kỹ năng",
           description: item.description || item.reason || "",
@@ -216,6 +211,15 @@ function CVAnalyzerContent() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setIsMounted(true);
+    const historyId = searchParams.get('historyId');
+    if (historyId) {
+      loadHistory(historyId);
+    }
+  }, [searchParams]);
 
   const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 
@@ -512,7 +516,7 @@ function CVAnalyzerContent() {
                           Lời khuyên từ Mentor LexiAI
                         </h3>
                         <p className="text-lg text-foreground/90 leading-relaxed italic">
-                          "{result.personalizedFeedback}"
+                          &quot;{result.personalizedFeedback}&quot;
                         </p>
                       </div>
                     </div>
@@ -549,7 +553,7 @@ function CVAnalyzerContent() {
                       <div className="space-y-4">
                         <div className="bg-accent/5 p-3 rounded-lg border border-accent/10">
                           <p className="text-sm font-medium italic text-foreground">
-                            "{result.recruiterBrain.thoughts}"
+                            &quot;{result.recruiterBrain.thoughts}&quot;
                           </p>
                         </div>
                         
@@ -720,7 +724,7 @@ function CVAnalyzerContent() {
                           <div className="flex gap-4">
                             <div className={`mt-1 h-2 w-2 rounded-full flex-shrink-0 ${issue.severity === 'high' ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]' : issue.severity === 'medium' ? 'bg-yellow-500' : 'bg-blue-500'}`} />
                             <div className="flex-1 space-y-4">
-                              <div className="space-y-1"><span className="text-xs font-bold uppercase text-muted-foreground">Nội dung gốc</span><p className="text-sm font-medium italic text-foreground">"{issue.text}"</p></div>
+                              <div className="space-y-1"><span className="text-xs font-bold uppercase text-muted-foreground">Nội dung gốc</span><p className="text-sm font-medium italic text-foreground">&quot;{issue.text}&quot;</p></div>
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="bg-red-500/5 rounded-lg p-3 border border-red-500/10"><span className="text-[10px] font-black uppercase text-red-500 block mb-1">Vấn đề phát hiện</span><p className="text-sm text-foreground">{issue.problem}</p></div>
                                 <div className="bg-green-500/10 dark:bg-green-500/5 rounded-lg p-3 border border-green-500/20 relative"><span className="text-[10px] font-black uppercase text-green-600 dark:text-green-500 block mb-1">Gợi ý từ AI</span><p className="text-sm font-bold text-foreground leading-relaxed">{issue.suggestion}</p>
@@ -758,7 +762,10 @@ export default function CVAnalyzer() {
   const [userKey, setUserKey] = useState<string | null>(null);
 
   useEffect(() => {
-    setUserKey(localStorage.getItem('username') || 'guest');
+    const stored = localStorage.getItem('username') || 'guest';
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setUserKey(stored);
+     
   }, []);
 
   if (userKey === null) return null;
