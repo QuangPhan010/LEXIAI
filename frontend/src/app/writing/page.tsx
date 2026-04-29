@@ -30,6 +30,12 @@ const templates = [
     name: 'Email/Follow-up', 
     icon: <Mail size={18} />, 
     prompt: "Hãy soạn một email (xin việc, cảm ơn sau phỏng vấn, hoặc hỏi kết quả) chuyên nghiệp dựa trên bối cảnh sau. Chỉ trả về kết quả bằng tiếng Việt. Bối cảnh: "
+  },
+  { 
+    id: 'smart-cover-letter', 
+    name: 'Smart Cover Letter', 
+    icon: <Sparkles size={18} />, 
+    prompt: "Bạn là chuyên gia tư vấn sự nghiệp. Hãy viết một Cover Letter thông minh bằng cách kết nối trực tiếp các điểm mạnh trong CV của ứng viên với các yêu cầu cụ thể trong JD. Sử dụng kỹ thuật 'Smart Highlight' - tức là dẫn chứng cụ thể: 'Tại mục [Yêu cầu trong JD], tôi có kinh nghiệm [Kinh nghiệm tương ứng trong CV]...'. Hãy tạo ra các đoạn văn có tính thuyết phục cực cao, chứng minh ứng viên là mảnh ghép hoàn hảo. Chỉ trả về nội dung Cover Letter bằng tiếng Việt. "
   }
 ];
 
@@ -68,7 +74,21 @@ function WritingContent() {
         generationConfig: { }
       });
       
-      const fullPrompt = `${activeTemplate.prompt}${input}\n\nYêu cầu phong cách: Sử dụng tông giọng ${activeTone.name} (${activeTone.description}).\nYêu cầu ngôn ngữ: Chỉ trả về tiếng Việt, không dùng tiếng Anh trừ từ viết tắt chuyên ngành bắt buộc.`;
+      let context = input;
+      const username = localStorage.getItem('username') || 'guest';
+      const lastCv = localStorage.getItem(`last_cv_text_${username}`);
+      const lastJd = localStorage.getItem('last_jd_text'); // Assuming extension or other pages save this
+
+      if (activeTemplate.id === 'smart-cover-letter') {
+        context = `
+          NỘI DUNG CV: ${lastCv || 'Không có dữ liệu CV'}
+          MÔ TẢ CÔNG VIỆC (JD): ${input || lastJd || 'Không có dữ liệu JD'}
+          
+          GHI CHÚ THÊM TỪ NGƯỜI DÙNG: ${input}
+        `;
+      }
+
+      const fullPrompt = `${activeTemplate.prompt}${context}\n\nYêu cầu phong cách: Sử dụng tông giọng ${activeTone.name} (${activeTone.description}).\nYêu cầu ngôn ngữ: Chỉ trả về tiếng Việt, không dùng tiếng Anh trừ từ viết tắt chuyên ngành bắt buộc.`;
       
       let fullText = "";
       const result = await model.generateContentStream(fullPrompt);

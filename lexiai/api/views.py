@@ -397,3 +397,22 @@ class ClaimQuestRewardView(APIView):
             return Response({"error": "Nhiệm vụ không tồn tại."}, status=status.HTTP_404_NOT_FOUND)
         except UserQuest.DoesNotExist:
             return Response({"error": "Bạn chưa hoàn thành nhiệm vụ này."}, status=status.HTTP_400_BAD_REQUEST)
+
+class AddPointsView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        points = request.data.get('points', 0)
+        reason = request.data.get('reason', 'Custom achievement')
+        
+        if not isinstance(points, int) or points <= 0:
+            return Response({"error": "Số điểm phải là số nguyên dương."}, status=status.HTTP_400_BAD_REQUEST)
+            
+        profile, _ = UserProfile.objects.get_or_create(user=request.user)
+        profile.add_points(points)
+        
+        return Response({
+            "message": f"Bạn đã nhận được {points} XP cho: {reason}",
+            "new_total": profile.points,
+            "level": profile.level
+        })

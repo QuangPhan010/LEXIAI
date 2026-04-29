@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Rocket, Sparkles, Target, BookOpen, GraduationCap, ArrowRight, RefreshCw, Map, ChevronRight, Globe, ExternalLink } from 'lucide-react';
+import { Rocket, Sparkles, Target, BookOpen, GraduationCap, ArrowRight, RefreshCw, Map, ChevronRight, Globe, ExternalLink, CheckCircle2 } from 'lucide-react';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { resolveGeminiModel } from '@/lib/geminiModel';
 
@@ -12,6 +12,8 @@ function CareerRoadmapContent() {
   const [roadmapText, setRoadmapText] = useState<string | null>(null);
   const [targetRole, setTargetRole] = useState('');
   const [mounted, setMounted] = useState(false);
+  const [quests, setQuests] = useState<any[]>([]);
+  const [completingId, setCompletingId] = useState<string | null>(null);
   
   useEffect(() => {
     setMounted(true);
@@ -28,6 +30,7 @@ function CareerRoadmapContent() {
     
     if (savedRoadmap && savedCvSig === currentCvSig) {
       setRoadmapText(savedRoadmap);
+      parseQuests(savedRoadmap);
     } else if (savedRoadmap) {
       // Nếu CV đã đổi, xóa roadmap cũ để tránh nhầm lẫn
       localStorage.removeItem(`last_roadmap_${username}`);
@@ -62,7 +65,7 @@ function CareerRoadmapContent() {
         1. **Mục tiêu chiến lược**: Vị trí mong muốn và lý do dựa trên thế mạnh CV.
         2. **Lộ trình theo giai đoạn (6 tháng/lần)**: Các kỹ năng cụ thể cần đạt được.
         3. **Tài nguyên học tập ĐỀ XUẤT**: Liệt kê ít nhất 3 khóa học hoặc tài liệu thực tế (kèm link giả định từ Coursera, Udemy, hoặc LinkedIn Learning).
-        4. **Chứng chỉ nên có**: Các chứng chỉ quốc tế giá trị cho lộ trình này.
+        5. **Career Quests (Nhiệm vụ sự nghiệp)**: Cuối cùng, hãy liệt kê đúng 3 nhiệm vụ ngắn hạn người dùng có thể thực hiện NGAY để tiến gần hơn tới mục tiêu. Mỗi nhiệm vụ phải bắt đầu bằng dòng "[QUEST] Tên nhiệm vụ | Mô tả ngắn | XP" (với XP là số điểm từ 20-50 tùy độ khó).
         
         Văn phong chuyên nghiệp, truyền cảm hứng. Chỉ trả về Markdown bằng tiếng Việt.
  
@@ -72,6 +75,7 @@ function CareerRoadmapContent() {
       const result = await model.generateContent(prompt);
       const text = result.response.text();
       setRoadmapText(text);
+      parseQuests(text);
       
       // Lưu kết quả kèm theo metadata để kiểm tra tính hợp lệ sau này
       localStorage.setItem(`last_roadmap_${username}`, text);
@@ -82,6 +86,53 @@ function CareerRoadmapContent() {
       alert(`Lỗi: ${error.message}`);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const parseQuests = (text: string) => {
+    const lines = text.split('\n');
+    const extractedQuests = lines
+      .filter(line => line.includes('[QUEST]'))
+      .map((line, index) => {
+        const content = line.replace('[QUEST]', '').trim();
+        const [title, desc, xpStr] = content.split('|').map(s => s.trim());
+        const xp = parseInt(xpStr) || 20;
+        return { id: `q-${index}`, title, desc, xp, completed: false };
+      });
+    setQuests(extractedQuests);
+  };
+
+  const handleCompleteQuest = async (quest: any) => {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      alert("Vui lòng đăng nhập để nhận thưởng XP!");
+      return;
+    }
+
+    setCompletingId(quest.id);
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'}/profile/add-points/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          points: quest.xp,
+          reason: `Hoàn thành nhiệm vụ: ${quest.title}`
+        })
+      });
+
+      if (res.ok) {
+        setQuests(prev => prev.map(q => q.id === quest.id ? { ...q, completed: true } : q));
+        // Update local profile points if needed or just let dashboard refresh
+      } else {
+        alert("Có lỗi khi nhận thưởng. Vui lòng thử lại.");
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setCompletingId(null);
     }
   };
 
@@ -113,7 +164,7 @@ function CareerRoadmapContent() {
                 onChange={(e) => setTargetRole(e.target.value)}
                 suppressHydrationWarning
                 placeholder="VD: Kế toán trưởng, Quản trị kinh doanh, Marketing Manager..."
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-6 py-4 text-lg focus:outline-none focus:ring-1 focus:ring-accent transition-all"
+                className="w-full bg-input border border-zinc-300 dark:border-white/10 rounded-xl px-6 py-4 text-lg focus:outline-none focus:ring-1 focus:ring-accent transition-all"
               />
             </div>
             <button 
@@ -157,30 +208,56 @@ function CareerRoadmapContent() {
                   onChange={(e) => setTargetRole(e.target.value)}
                   suppressHydrationWarning
                   placeholder="Mục tiêu mới..."
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none"
+                  className="w-full bg-input border border-zinc-300 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-accent/30 transition-all"
                 />
                 <button 
                   onClick={generateRoadmap}
                   suppressHydrationWarning
-                  className="w-full py-3 bg-white/5 border border-white/10 hover:bg-white/10 rounded-xl font-bold transition-all flex items-center justify-center gap-2"
+                  className="w-full py-3 bg-input border border-zinc-300 dark:border-white/10 hover:bg-zinc-200 dark:hover:bg-white/10 rounded-xl font-bold transition-all flex items-center justify-center gap-2"
                 >
                   <RefreshCw size={16} /> Cập nhật lộ trình
                 </button>
               </div>
 
               <div className="glass p-6 space-y-4">
-                <h3 className="font-bold flex items-center gap-2"><GraduationCap size={18} className="text-accent" /> Lời khuyên nhanh</h3>
-                <ul className="space-y-3">
-                  {[
-                    "Tập trung vào các kỹ năng thực tế có thể tạo sản phẩm.",
-                    "Xây dựng mạng lưới kết nối trên LinkedIn.",
-                    "Cập nhật CV sau mỗi 6 tháng."
-                  ].map((tip, i) => (
-                    <li key={i} className="text-xs text-zinc-400 flex gap-2">
-                      <ChevronRight size={14} className="text-accent shrink-0" /> {tip}
-                    </li>
-                  ))}
-                </ul>
+                <h3 className="font-bold flex items-center gap-2"><Target size={18} className="text-accent" /> Nhiệm vụ (Career Quests)</h3>
+                <div className="space-y-3">
+                  {quests.length > 0 ? quests.map((q) => (
+                    <motion.div 
+                      key={q.id}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      className={`p-4 rounded-xl border transition-all ${
+                        q.completed 
+                        ? 'bg-green-500/10 border-green-500/30' 
+                        : 'bg-white/50 dark:bg-white/5 border-zinc-300 dark:border-white/10 hover:border-accent/30 shadow-sm'
+                      }`}
+                    >
+                      <div className="flex justify-between items-start mb-1">
+                        <h4 className={`text-xs font-bold ${q.completed ? 'text-green-400 line-through' : 'text-foreground'}`}>{q.title}</h4>
+                        <span className="text-[10px] font-black text-accent">+{q.xp} XP</span>
+                      </div>
+                      <p className="text-[10px] text-muted-foreground mb-3">{q.desc}</p>
+                      {!q.completed && (
+                        <button 
+                          onClick={() => handleCompleteQuest(q)}
+                          disabled={completingId !== null}
+                          className="w-full py-2 bg-accent/20 hover:bg-accent text-accent hover:text-white rounded-lg text-[10px] font-bold transition-all flex items-center justify-center gap-1"
+                        >
+                          {completingId === q.id ? <RefreshCw size={10} className="animate-spin" /> : <Sparkles size={10} />}
+                          Đánh dấu hoàn thành
+                        </button>
+                      )}
+                      {q.completed && (
+                        <div className="flex items-center justify-center gap-1 text-[10px] font-bold text-green-500">
+                          <CheckCircle2 size={12} /> Đã nhận thưởng
+                        </div>
+                      ) }
+                    </motion.div>
+                  )) : (
+                    <p className="text-xs text-muted-foreground italic">Tạo lộ trình để nhận nhiệm vụ thăng cấp.</p>
+                  )}
+                </div>
               </div>
             </div>
 
