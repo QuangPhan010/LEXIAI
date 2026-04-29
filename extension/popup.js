@@ -56,33 +56,64 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
 
+        // Get tokens and local data from the tab
         chrome.scripting.executeScript({
             target: { tabId: lexiTab.id },
             func: () => {
-                const username = localStorage.getItem('username') || 'guest';
                 return {
                     apiKey: localStorage.getItem('gemini_api_key'),
-                    cvText: localStorage.getItem(`last_cv_text_${username}`)
+                    accessToken: localStorage.getItem('access_token'),
+                    username: localStorage.getItem('username'),
+                    localCvText: localStorage.getItem(`last_cv_text_${localStorage.getItem('username') || 'guest'}`)
                 };
             }
         }, async (results) => {
             if (results && results[0] && results[0].result) {
-                const { apiKey, cvText } = results[0].result;
-                
-                if (!apiKey || !cvText) {
-                    alert('Tìm thấy tab LexiAI nhưng chưa có dữ liệu API Key hoặc CV. Vui lòng đăng nhập và tải CV lên web trước.');
+                const { apiKey, accessToken, username, localCvText } = results[0].result;
+                let finalCvText = localCvText;
+
+                // If not in localStorage, try fetching from API
+                if (!finalCvText && accessToken) {
+                    try {
+                        // Determine API Base URL from tab URL
+                        const baseUrl = lexiTab.url.includes('localhost') 
+                            ? 'http://127.0.0.1:8000/api' 
+                            : 'https://lexiai-backend-5gtf.onrender.com/api'; 
+
+                        const response = await fetch(`${baseUrl}/history/`, {
+                            headers: { 'Authorization': `Bearer ${accessToken}` }
+                        });
+                        
+                        if (response.ok) {
+                            const history = await response.json();
+                            if (history && history.length > 0) {
+                                finalCvText = history[0].extracted_text;
+                            }
+                        }
+                    } catch (e) {
+                        console.error("Lỗi khi gọi API LexiAI:", e);
+                    }
+                }
+
+                if (!apiKey || !finalCvText) {
+                    alert('Đã kết nối nhưng thiếu dữ liệu. Vui lòng đảm bảo bạn đã: \n1. Cài đặt API Key trong Web App.\n2. Đã từng tải lên và phân tích ít nhất 1 CV.');
                     return;
                 }
 
                 apiInput.value = apiKey;
-                cvInput.value = cvText;
-                await chrome.storage.local.set({ gemini_api_key: apiKey, cv_text: cvText });
-                alert('Đồng bộ dữ liệu thành công!');
+                cvInput.value = finalCvText;
+                await chrome.storage.local.set({ 
+                    gemini_api_key: apiKey, 
+                    cv_text: finalCvText,
+                    access_token: accessToken 
+                });
+                
+                alert('Đồng bộ dữ liệu thành công từ tài khoản ' + (username || 'người dùng') + '!');
                 
                 document.getElementById('sync-container').style.display = 'none';
                 document.getElementById('analysis-container').style.display = 'block';
             } else {
-                alert('Không thể lấy dữ liệu từ tab LexiAI. Hãy thử tải lại trang web LexiAI và thử lại.');
+                alert('Không thể kết nối với tab LexiAI. Hãy thử tải lại trang web.');
             }
         });
     });

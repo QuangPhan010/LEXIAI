@@ -16,6 +16,7 @@
     "https://*.vietnamworks.com/*",
     "https://*.careerbuilder.vn/*",
     "https://*.vercel.app/*",
+    "https://*.onrender.com/*",
     "http://localhost/*"
   ],
   "action": {
