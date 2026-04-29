@@ -45,6 +45,13 @@ class AnalysisHistory(models.Model):
     radar_data = models.JSONField(null=True, blank=True) # Stores chart data
     skill_gaps = models.JSONField(null=True, blank=True) # Stores skill gaps analysis
     ats_keywords = models.JSONField(null=True, blank=True) # Stores ATS keywords
+    
+    # New analysis features
+    recruiter_brain = models.JSONField(null=True, blank=True) # HR thoughts, screening status
+    career_intelligence = models.JSONField(null=True, blank=True) # Role suitablity, next level gaps
+    truth_detection = models.JSONField(null=True, blank=True) # Exaggeration signs, integrity score
+    personalized_feedback = models.TextField(null=True, blank=True) # Narrative coach feedback
+    
     extracted_text = models.TextField(null=True, blank=True) # Stores original text for editor
     created_at = models.DateTimeField(auto_now_add=True)
 

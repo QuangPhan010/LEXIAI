@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { Upload, FileText, BarChart3, AlertCircle, CheckCircle2, ChevronRight, Zap, Trophy, ClipboardCheck, Target, Key, PlusCircle, RefreshCw } from 'lucide-react';
+import { Upload, FileText, BarChart3, AlertCircle, CheckCircle2, ChevronRight, Zap, Trophy, ClipboardCheck, Target, Key, PlusCircle, RefreshCw, Eye, Lightbulb, ShieldCheck, Brain, TrendingUp, XCircle } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import { API_BASE_URL } from '@/lib/api';
 import { useSearchParams } from 'next/navigation';
@@ -50,6 +50,21 @@ interface AnalysisResult {
     present: string[];
     missing: string[];
   };
+  // New features
+  recruiterBrain?: {
+    thoughts: string;
+    passScreening: boolean;
+    reasons: string[];
+  };
+  careerIntelligence?: {
+    recommendedRoles: string[];
+    nextLevelMissing: string[];
+  };
+  truthDetection?: {
+    exaggerationSigns: string[];
+    integrityScore: number;
+  };
+  personalizedFeedback?: string;
 }
 
 function parseAnalysisJson(rawText: string): AnalysisResult {
@@ -109,7 +124,12 @@ function parseAnalysisJson(rawText: string): AnalysisResult {
     issues: data.issues || [],
     radarData,
     skillGaps,
-    atsKeywords: data.atsKeywords || data.ats_keywords || { present: [], missing: [] }
+    atsKeywords: data.atsKeywords || data.ats_keywords || { present: [], missing: [] },
+    // New features
+    recruiterBrain: data.recruiterBrain || data.recruiter_brain,
+    careerIntelligence: data.careerIntelligence || data.career_intelligence,
+    truthDetection: data.truthDetection || data.truth_detection,
+    personalizedFeedback: data.personalizedFeedback || data.personalized_feedback
   } as AnalysisResult;
 }
 
@@ -179,7 +199,11 @@ function CVAnalyzerContent() {
           atsKeywords: {
             present: data.ats_keywords?.present || data.atsKeywords?.present || [],
             missing: data.ats_keywords?.missing || data.atsKeywords?.missing || []
-          }
+          },
+          recruiterBrain: data.recruiter_brain || data.recruiterBrain,
+          careerIntelligence: data.career_intelligence || data.careerIntelligence,
+          truthDetection: data.truth_detection || data.truthDetection,
+          personalizedFeedback: data.personalized_feedback || data.personalizedFeedback
         };
         setResult(resultData);
         setExtractedText(data.extracted_text || '');
@@ -208,6 +232,10 @@ function CVAnalyzerContent() {
           radar_data: data.radarData,
           skill_gaps: data.skillGaps,
           ats_keywords: data.atsKeywords,
+          recruiter_brain: data.recruiterBrain,
+          career_intelligence: data.careerIntelligence,
+          truth_detection: data.truthDetection,
+          personalized_feedback: data.personalizedFeedback,
           extracted_text: text
         })
       });
@@ -306,7 +334,21 @@ function CVAnalyzerContent() {
           "atsKeywords": {
             "present": ["từ khóa đã có 1", "từ khóa đã có 2"],
             "missing": ["từ khóa thiếu 1", "từ khóa thiếu 2"]
-          }
+          },
+          "recruiterBrain": {
+            "thoughts": "Suy nghĩ của HR về ứng viên này (ngắn gọn, sắc sảo)",
+            "passScreening": boolean,
+            "reasons": ["lý do 1", "lý do 2"]
+          },
+          "careerIntelligence": {
+            "recommendedRoles": ["role 1", "role 2"],
+            "nextLevelMissing": ["thiếu gì để lên level tiếp theo"]
+          },
+          "truthDetection": {
+            "exaggerationSigns": ["các dấu hiệu nói quá hoặc từ ngữ sáo rỗng"],
+            "integrityScore": number (0-100)
+          },
+          "personalizedFeedback": "Lời khuyên cá nhân hóa trực tiếp cho ứng viên (không dùng mẫu, viết như một mentor)"
         }
 
         NỘI DUNG CV: ${text}
@@ -450,7 +492,34 @@ function CVAnalyzerContent() {
             </div>
 
             {isEditing ? (<div className="h-[800px]"><CVEditor initialContent={extractedText} /></div>) : (
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+              <div className="space-y-8">
+                {/* Personalized Feedback - The Mentor's Voice */}
+                {result.personalizedFeedback && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 20 }} 
+                    animate={{ opacity: 1, y: 0 }}
+                    className="glass p-8 border-l-4 border-l-accent relative overflow-hidden group"
+                  >
+                    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                      <Brain size={120} className="text-accent" />
+                    </div>
+                    <div className="relative z-10 flex flex-col md:flex-row gap-6 items-start">
+                      <div className="w-16 h-16 rounded-2xl bg-accent/10 flex items-center justify-center shrink-0">
+                        <Zap size={32} className="text-accent" />
+                      </div>
+                      <div className="space-y-2">
+                        <h3 className="text-xl font-bold flex items-center gap-2">
+                          Lời khuyên từ Mentor LexiAI
+                        </h3>
+                        <p className="text-lg text-foreground/90 leading-relaxed italic">
+                          "{result.personalizedFeedback}"
+                        </p>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 <div className="lg:col-span-4 space-y-6">
                   <div className="glass p-8 flex flex-col items-center text-center">
                     <div className="relative w-40 h-40 flex items-center justify-center mb-6">
@@ -464,6 +533,43 @@ function CVAnalyzerContent() {
                     <h2 className="text-2xl font-bold mb-1">Điểm tác động</h2>
                     <p className="text-sm text-muted-foreground">CV của bạn tốt hơn {result.score - 5}% ứng viên trong hệ thống.</p>
                   </div>
+
+                  {/* Recruiter Brain Section */}
+                  {result.recruiterBrain && (
+                    <div className="glass p-6 space-y-4 border-t-4 border-t-accent">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-sm font-bold uppercase tracking-wider opacity-60 flex items-center gap-2">
+                          <Eye size={14} /> Recruiter Brain
+                        </h3>
+                        <div className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${result.recruiterBrain.passScreening ? 'bg-green-500/20 text-green-500' : 'bg-red-500/20 text-red-500'}`}>
+                          {result.recruiterBrain.passScreening ? 'Pass Screening' : 'Fail Screening'}
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-4">
+                        <div className="bg-accent/5 p-3 rounded-lg border border-accent/10">
+                          <p className="text-sm font-medium italic text-foreground">
+                            "{result.recruiterBrain.thoughts}"
+                          </p>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <p className="text-[10px] font-bold uppercase opacity-50">Lý do chính:</p>
+                          <ul className="space-y-1.5">
+                            {result.recruiterBrain.reasons.map((reason, i) => (
+                              <li key={i} className="flex items-start gap-2 text-xs text-muted-foreground">
+                                {result.recruiterBrain?.passScreening ? 
+                                  <CheckCircle2 size={12} className="text-green-500 mt-0.5 shrink-0" /> : 
+                                  <XCircle size={12} className="text-red-500 mt-0.5 shrink-0" />
+                                }
+                                {reason}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                       <div className="glass p-6 min-h-[400px] w-full flex flex-col" style={{ minWidth: 0 }}>
                         <h3 className="text-sm font-bold uppercase tracking-wider opacity-60 mb-4">Phân tích kỹ năng</h3>
@@ -505,8 +611,9 @@ function CVAnalyzerContent() {
                     </div>
                   </div>
                 </div>
-
+                
                 <div className="lg:col-span-8 space-y-6">
+
                   {/* Skill Gaps Section */}
                   {result.skillGaps && result.skillGaps.length > 0 && (
                     <div className="glass p-6 space-y-4 border-l-4 border-l-yellow-500">
@@ -522,6 +629,82 @@ function CVAnalyzerContent() {
                           </div>
                         ))}
                       </div>
+                    </div>
+                  )}
+
+                  {/* Career Intelligence Section */}
+                  {result.careerIntelligence && (
+                    <div className="glass p-8 space-y-6 relative overflow-hidden">
+                      <div className="absolute top-0 right-0 w-32 h-32 bg-accent/5 rounded-full -mr-16 -mt-16 blur-2xl" />
+                      <div className="flex items-center justify-between relative z-10">
+                        <h3 className="text-xl font-bold flex items-center gap-2">
+                          <TrendingUp size={20} className="text-accent" /> Career Intelligence
+                        </h3>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
+                        <div className="space-y-4">
+                          <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-muted-foreground">
+                            <Target size={14} /> Vai trò thực tế phù hợp
+                          </div>
+                          <div className="flex flex-wrap gap-2">
+                            {result.careerIntelligence.recommendedRoles.map((role, i) => (
+                              <span key={i} className="px-3 py-1.5 bg-accent/10 border border-accent/20 rounded-xl text-sm font-medium text-accent">
+                                {role}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                        
+                        <div className="space-y-4">
+                          <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-muted-foreground">
+                            <Lightbulb size={14} /> Để lên Level tiếp theo
+                          </div>
+                          <ul className="space-y-2">
+                            {result.careerIntelligence.nextLevelMissing.map((item, i) => (
+                              <li key={i} className="flex items-start gap-2 text-sm text-foreground/80">
+                                <ChevronRight size={16} className="text-accent mt-0.5 shrink-0" />
+                                {item}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Truth Detection Section */}
+                  {result.truthDetection && (
+                    <div className="glass p-6 space-y-4 border-l-4 border-l-blue-500 bg-blue-500/5">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-lg font-bold flex items-center gap-2 text-blue-600 dark:text-blue-400">
+                          <ShieldCheck size={20} /> Integrity & Clarity Check
+                        </h3>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold text-muted-foreground uppercase">Trust Score:</span>
+                          <span className={`text-lg font-black ${result.truthDetection.integrityScore > 80 ? 'text-green-500' : result.truthDetection.integrityScore > 50 ? 'text-yellow-500' : 'text-red-500'}`}>
+                            {result.truthDetection.integrityScore}%
+                          </span>
+                        </div>
+                      </div>
+                      
+                      {result.truthDetection.exaggerationSigns.length > 0 ? (
+                        <div className="space-y-2">
+                          <p className="text-xs font-bold text-blue-500/80 uppercase">Các điểm cần làm rõ/thực tế hơn:</p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            {result.truthDetection.exaggerationSigns.map((sign, i) => (
+                              <div key={i} className="bg-white/50 dark:bg-black/20 p-3 rounded-lg border border-blue-500/10 text-sm text-foreground/80 flex items-start gap-2">
+                                <AlertCircle size={14} className="text-blue-500 mt-0.5 shrink-0" />
+                                {sign}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="text-sm text-green-500 font-medium flex items-center gap-2">
+                          <CheckCircle2 size={16} /> CV của bạn có độ tin cậy cao và sử dụng ngôn ngữ chuyên nghiệp, thực tế.
+                        </p>
+                      )}
                     </div>
                   )}
 
@@ -552,7 +735,8 @@ function CVAnalyzerContent() {
                   </div>
                 </div>
               </div>
-            )}
+            </div>
+          )}
           </div>
         )}
       </main>
