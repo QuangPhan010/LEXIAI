@@ -304,14 +304,8 @@ function CVAnalyzerContent() {
       setExtracting(false);
 
       const modelType = localStorage.getItem('lexiai_model') || 'flash';
-      const genAI = new GoogleGenerativeAI(apiKey);
-      const modelName = await resolveGeminiModel(apiKey, modelType === 'pro' ? 'pro' : 'flash');
-      const model = genAI.getGenerativeModel({ 
-        model: modelName,
-        generationConfig: { 
-          responseMimeType: 'application/json' 
-        }
-      });
+      const accessToken = localStorage.getItem('access_token');
+      const modelName = modelType === 'pro' ? 'gemini-1.5-pro' : 'gemini-1.5-flash';
 
       const prompt = `
         Bạn là chuyên gia nhân sự cao cấp và hệ thống ATS.
@@ -360,34 +354,30 @@ function CVAnalyzerContent() {
         ${jd ? `MÔ TẢ CÔNG VIỆC (JD): ${jd}` : ''}
       `;
 
-      let aiResponseText = "";
-      let retries = 0;
-      const maxRetries = 5;
-      while (retries < maxRetries) {
-        try {
-          const aiResult = await model.generateContent({
-            contents: [{ role: 'user', parts: [{ text: prompt }] }],
-            generationConfig: { responseMimeType: 'application/json' },
-          });
-          aiResponseText = aiResult.response.text();
-          break;
-        } catch (err: any) {
-          retries++;
-          const isRateLimit = err.message?.includes('429') || err.message?.includes('quota');
-          const isServiceBusy = err.message?.includes('503') || err.message?.includes('high demand') || err.message?.includes('service unavailable');
-          
-          if (retries < maxRetries && (isRateLimit || isServiceBusy)) {
-            const waitTime = Math.pow(2, retries) * 1000 + Math.random() * 1000;
-            console.log(`Model đang bận hoặc quá tải, thử lại lần ${retries}/${maxRetries} sau ${Math.round(waitTime)}ms...`);
-            await delay(waitTime);
-          } else { throw err; }
-        }
+      const proxyResponse = await fetch(`${API_BASE_URL}/ai/proxy/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`
+        },
+        body: JSON.stringify({
+          prompt: prompt,
+          input_text: text,
+          model: modelName,
+          api_key: apiKey
+        })
+      });
+
+      if (!proxyResponse.ok) {
+        const errorData = await proxyResponse.json();
+        throw new Error(errorData.error || "Lỗi khi gọi AI Proxy.");
       }
+
+      const { result: aiResponseText } = await proxyResponse.json();
       const data = parseAnalysisJson(aiResponseText);
       setResult(data);
       localStorage.setItem(`last_cv_result_${username}`, JSON.stringify(data));
 
-      const accessToken = localStorage.getItem('access_token');
       if (accessToken) {
         await saveToHistory(accessToken, file.name, data, text);
       }

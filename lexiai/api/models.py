@@ -108,3 +108,29 @@ class UserQuest(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.quest.title}"
+
+class Guild(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    description = models.TextField(blank=True)
+    icon = models.CharField(max_length=50, default='Users')
+    points = models.IntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return self.name
+
+class GuildMember(models.Model):
+    ROLES = (
+        ('LEADER', 'Trưởng hội'),
+        ('MEMBER', 'Thành viên'),
+    )
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='guild_memberships')
+    guild = models.ForeignKey(Guild, on_delete=models.CASCADE, related_name='members')
+    role = models.CharField(max_length=20, choices=ROLES, default='MEMBER')
+    joined_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        unique_together = ('user', 'guild')
+
+    def __str__(self):
+        return f"{self.user.username} in {self.guild.name} ({self.role})"

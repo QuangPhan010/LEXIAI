@@ -166,3 +166,11 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'phanvantanquang@gmail.com'
 EMAIL_HOST_PASSWORD = 'chny najk ludv bvph'
 DEFAULT_FROM_EMAIL = 'LexiAI <noreply@lexiai.com>'
+
+# Cache Configuration
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'lexiai_cache_table',
+    }
+}

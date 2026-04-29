@@ -10,7 +10,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { resolveGeminiModel } from '@/lib/geminiModel';
 import { API_BASE_URL } from '@/lib/api';
-import { Briefcase } from 'lucide-react';
+import { Briefcase, Map as MapIcon } from 'lucide-react';
 
 function HomeContent() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -74,9 +74,8 @@ function HomeContent() {
     setRoadmapLoading(true);
     try {
       const modelType = localStorage.getItem('lexiai_model') || 'flash';
-      const genAI = new GoogleGenerativeAI(apiKey);
-      const modelName = await resolveGeminiModel(apiKey, modelType === 'pro' ? 'pro' : 'flash');
-      const model = genAI.getGenerativeModel({ model: modelName });
+      const accessToken = localStorage.getItem('access_token');
+      const modelName = modelType === 'pro' ? 'gemini-1.5-pro' : 'gemini-1.5-flash';
 
       const prompt = `
         Dựa trên nội dung CV sau đây, hãy xây dựng một lộ trình phát triển sự nghiệp (Career Roadmap) chi tiết trong 2 năm tới.
@@ -90,8 +89,23 @@ function HomeContent() {
         NỘI DUNG CV: ${cvText}
       `;
 
-      const result = await model.generateContent(prompt);
-      setRoadmap(result.response.text());
+      const res = await fetch(`${API_BASE_URL}/ai/proxy/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`
+        },
+        body: JSON.stringify({
+          prompt: prompt,
+          input_text: cvText,
+          model: modelName,
+          api_key: apiKey
+        })
+      });
+
+      if (!res.ok) throw new Error("Lỗi khi gọi AI Proxy.");
+      const { result } = await res.json();
+      setRoadmap(result);
     } catch (error) {
       console.error("Lỗi tạo lộ trình:", error);
     } finally {
@@ -224,6 +238,7 @@ function HomeContent() {
                 </ResponsiveContainer>
               </div>
             </div>
+
 
             {/* AI Career Roadmap - Now Below */}
             <div className="glass p-8 space-y-6 border-accent/20 relative overflow-hidden group">

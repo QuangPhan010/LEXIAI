@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import AnalysisHistory, InterviewHistory, UserProfile, Quest, UserQuest
+from .models import AnalysisHistory, InterviewHistory, UserProfile, Quest, UserQuest, Guild, GuildMember
 
 class UserProfileSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username', read_only=True)
@@ -79,3 +79,26 @@ class UserQuestSerializer(serializers.ModelSerializer):
         model = UserQuest
         fields = '__all__'
         read_only_fields = ('user', 'completed_at')
+
+class GuildMemberSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='user.username', read_only=True)
+    
+    class Meta:
+        model = GuildMember
+        fields = '__all__'
+        read_only_fields = ('joined_at',)
+
+class GuildSerializer(serializers.ModelSerializer):
+    member_count = serializers.IntegerField(source='members.count', read_only=True)
+    is_joined = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Guild
+        fields = '__all__'
+        read_only_fields = ('points', 'created_at')
+
+    def get_is_joined(self, obj):
+        user = self.context.get('request').user
+        if user.is_authenticated:
+            return GuildMember.objects.filter(user=user, guild=obj).exists()
+        return False

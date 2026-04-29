@@ -1,6 +1,8 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .views import ExtractTextView, RegisterView, HistoryView, HistoryDetailView, SendOTPView, InterviewHistoryView, InterviewHistoryDetailView, ProfileView, ForgotPasswordView, ResetPasswordView, QuestListView, ClaimQuestRewardView, AddPointsView
+from .ai_views import AIProxyView
+from .guild_views import GuildListView, GuildJoinView, GuildLeaveView, GuildDetailView
 
 urlpatterns = [
     path('auth/register/', RegisterView.as_view(), name='register'),
@@ -18,4 +20,9 @@ urlpatterns = [
     path('quests/', QuestListView.as_view(), name='quest-list'),
     path('quests/<int:pk>/claim/', ClaimQuestRewardView.as_view(), name='quest-claim'),
     path('profile/add-points/', AddPointsView.as_view(), name='add-points'),
+    path('ai/proxy/', AIProxyView.as_view(), name='ai-proxy'),
+    path('guilds/', GuildListView.as_view(), name='guild-list'),
+    path('guilds/<int:pk>/', GuildDetailView.as_view(), name='guild-detail'),
+    path('guilds/<int:pk>/join/', GuildJoinView.as_view(), name='guild-join'),
+    path('guilds/<int:pk>/leave/', GuildLeaveView.as_view(), name='guild-leave'),
 ]

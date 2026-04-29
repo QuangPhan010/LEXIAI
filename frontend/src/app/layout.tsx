@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import Footer from "@/components/Footer";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import PWAInitializer from "@/components/PWAInitializer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,6 +25,7 @@ export const metadata: Metadata = {
     shortcut: "/lexi_logo.svg",
     apple: "/lexi_logo.svg",
   },
+  manifest: "/manifest.json",
 };
 
 export default function RootLayout({
@@ -52,6 +54,7 @@ export default function RootLayout({
           </div>
           <Analytics />
           <SpeedInsights />
+          <PWAInitializer />
         </ThemeProvider>
       </body>
     </html>

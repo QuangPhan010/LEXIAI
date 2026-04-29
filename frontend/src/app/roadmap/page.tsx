@@ -52,11 +52,8 @@ function CareerRoadmapContent() {
     setLoading(true);
     try {
       const modelType = localStorage.getItem('lexiai_model') || 'flash';
-      const genAI = new GoogleGenerativeAI(apiKey);
-      const modelName = await resolveGeminiModel(apiKey, modelType === 'pro' ? 'pro' : 'flash');
-      const model = genAI.getGenerativeModel({ 
-        model: modelName,
-      });
+      const accessToken = localStorage.getItem('access_token');
+      const modelName = modelType === 'pro' ? 'gemini-1.5-pro' : 'gemini-1.5-flash';
 
       const prompt = `
         Dựa trên nội dung CV sau đây và vị trí mục tiêu là "${targetRole || 'phát triển sự nghiệp tối ưu'}", hãy xây dựng một lộ trình phát triển sự nghiệp (Career Roadmap) chi tiết trong 2 năm tới.
@@ -72,8 +69,26 @@ function CareerRoadmapContent() {
         NỘI DUNG CV: ${cvText}
       `;
 
-      const result = await model.generateContent(prompt);
-      const text = result.response.text();
+      const proxyResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'}/ai/proxy/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`
+        },
+        body: JSON.stringify({
+          prompt: prompt,
+          input_text: cvText,
+          model: modelName,
+          api_key: apiKey
+        })
+      });
+
+      if (!proxyResponse.ok) {
+        const errorData = await proxyResponse.json();
+        throw new Error(errorData.error || "Lỗi khi gọi AI Proxy.");
+      }
+
+      const { result: text } = await proxyResponse.json();
       setRoadmapText(text);
       parseQuests(text);
       
