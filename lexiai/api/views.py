@@ -3,6 +3,8 @@ from rest_framework.response import Response
 from rest_framework import status, permissions
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.models import User
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 import pdfminer.high_level
 import docx2txt
 import io
@@ -101,6 +103,13 @@ class ResetPasswordView(APIView):
 
         try:
             user = User.objects.get(email=email)
+            
+            # Kiểm tra độ mạnh mật khẩu mới
+            try:
+                validate_password(new_password, user)
+            except ValidationError as e:
+                return Response({"error": list(e.messages)[0]}, status=status.HTTP_400_BAD_REQUEST)
+                
             user.set_password(new_password)
             user.save()
             otp_record.delete()

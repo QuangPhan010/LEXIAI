@@ -2,21 +2,28 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Mail, Lock, User, ArrowRight, Loader2 } from 'lucide-react';
+import { Mail, Lock, User, ArrowRight, Loader2, Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import { API_BASE_URL } from '@/lib/api';
+import { getPasswordStrength, getStrengthLabel } from '@/lib/passwordUtils';
 
 export default function SignupPage() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [otp, setOtp] = useState('');
   const [loading, setLoading] = useState(false);
   const [otpLoading, setOtpLoading] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
   const router = useRouter();
+
+  const strength = getPasswordStrength(password);
+  const { label: strengthLabel, color: strengthColor } = getStrengthLabel(strength);
 
   const handleSendOTP = async () => {
     if (!email) return alert('Vui lòng nhập email trước.');
@@ -44,6 +51,16 @@ export default function SignupPage() {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (password !== confirmPassword) {
+      alert('Mật khẩu xác nhận không khớp.');
+      return;
+    }
+
+    if (strength < 2) {
+      alert('Mật khẩu quá yếu. Vui lòng sử dụng ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường và số.');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -139,13 +156,55 @@ export default function SignupPage() {
             <div className="relative">
               <Lock className="absolute left-3 top-3.5 text-muted-foreground" size={18} />
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="Mật khẩu"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 focus:outline-none focus:ring-1 focus:ring-accent transition-all"
+                className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-12 focus:outline-none focus:ring-1 focus:ring-accent transition-all"
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-3.5 text-muted-foreground hover:text-accent transition-colors"
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+              
+              {password && (
+                <div className="mt-2 space-y-1">
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-muted-foreground">Độ mạnh:</span>
+                    <span className={strengthColor.replace('bg-', 'text-')}>{strengthLabel}</span>
+                  </div>
+                  <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                    <motion.div 
+                      initial={{ width: 0 }}
+                      animate={{ width: `${(strength / 4) * 100}%` }}
+                      className={`h-full ${strengthColor} transition-all duration-300`}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="relative">
+              <Lock className="absolute left-3 top-3.5 text-muted-foreground" size={18} />
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                placeholder="Xác nhận mật khẩu"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+                className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-12 focus:outline-none focus:ring-1 focus:ring-accent transition-all"
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute right-3 top-3.5 text-muted-foreground hover:text-accent transition-colors"
+              >
+                {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
           </div>
 

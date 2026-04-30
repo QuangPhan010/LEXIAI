@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Mail, Lock, ArrowRight, Loader2, User } from 'lucide-react';
+import { Lock, ArrowRight, Loader2, User, Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
@@ -11,6 +11,7 @@ import { API_BASE_URL } from '@/lib/api';
 export default function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
@@ -88,14 +89,20 @@ export default function LoginPage() {
             <div className="relative">
               <Lock className="absolute left-3 top-3.5 text-muted-foreground" size={18} />
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="Mật khẩu"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                suppressHydrationWarning
-                className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 focus:outline-none focus:ring-1 focus:ring-accent transition-all"
+                className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-12 focus:outline-none focus:ring-1 focus:ring-accent transition-all"
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-3.5 text-muted-foreground hover:text-accent transition-colors"
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
             <div className="flex justify-end">
               <Link href="/auth/forgot-password" className="text-sm text-accent hover:underline">

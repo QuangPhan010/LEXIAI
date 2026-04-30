@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Navbar from '@/components/Navbar';
 import { API_BASE_URL } from '@/lib/api';
+import { fetchWithAuth } from '@/lib/apiClient';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FileText, Calendar, ChevronRight, Trash2, Zap, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
@@ -26,24 +27,10 @@ function HistoryContent() {
   }, [type]);
 
   const fetchHistory = async () => {
-    const token = localStorage.getItem('access_token');
-    if (!token) {
-      setLoading(false);
-      return;
-    }
-
     setLoading(true);
     try {
       const endpoint = type === 'cv' ? 'history/' : 'interviews/';
-      const res = await fetch(`${API_BASE_URL}/${endpoint}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (res.status === 401) {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('username');
-        window.location.href = '/auth/login';
-        return;
-      }
+      const res = await fetchWithAuth(`${API_BASE_URL}/${endpoint}`);
       if (res.ok) {
         const data = await res.json();
         setHistory(data);
@@ -57,14 +44,11 @@ function HistoryContent() {
 
   const deleteHistory = async (id: number, itemName?: string) => {
     if (!confirm('Bạn có chắc muốn xóa bản ghi này?')) return;
-    const token = localStorage.getItem('access_token');
     const username = localStorage.getItem('username') || 'guest';
     const endpoint = type === 'cv' ? 'history/' : 'interviews/';
-    
     try {
-      const res = await fetch(`${API_BASE_URL}/${endpoint}${id}/`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${token}` }
+      const res = await fetchWithAuth(`${API_BASE_URL}/${endpoint}${id}/`, {
+        method: 'DELETE'
       });
 
       if (res.ok) {

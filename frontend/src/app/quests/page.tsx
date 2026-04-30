@@ -22,6 +22,7 @@ import {
 import Navbar from '@/components/Navbar';
 import Link from 'next/link';
 import { API_BASE_URL } from '@/lib/api';
+import { fetchWithAuth } from '@/lib/apiClient';
 
 interface Quest {
   id: number;
@@ -63,13 +64,8 @@ function QuestsContent() {
   }, []);
 
   const fetchQuests = async () => {
-    const token = localStorage.getItem('access_token');
-    if (!token) return;
-
     try {
-      const res = await fetch(`${API_BASE_URL}/quests/`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      const res = await fetchWithAuth(`${API_BASE_URL}/quests/`);
       if (res.ok) {
         const data = await res.json();
         setQuests(data);
@@ -82,14 +78,10 @@ function QuestsContent() {
   };
 
   const handleClaim = async (questId: number) => {
-    const token = localStorage.getItem('access_token');
-    if (!token) return;
-
     setClaimingId(questId);
     try {
-      const res = await fetch(`${API_BASE_URL}/quests/${questId}/claim/`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}` }
+      const res = await fetchWithAuth(`${API_BASE_URL}/quests/${questId}/claim/`, {
+        method: 'POST'
       });
       const data = await res.json();
       if (res.ok) {

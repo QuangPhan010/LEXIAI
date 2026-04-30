@@ -4,11 +4,12 @@ import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import { motion } from 'framer-motion';
 import { 
-  User, Mail, Briefcase, Globe, 
+  User, Mail, Briefcase, 
   Award, Zap, Star, ShieldCheck, PenTool, Save, 
-  Plus, X, ChevronRight, TrendingUp, Cpu
+  Plus, X, ChevronRight, Cpu
 } from 'lucide-react';
 import { API_BASE_URL } from '@/lib/api';
+import { fetchWithAuth, logout } from '@/lib/apiClient';
 
 function ProfileContent() {
   const [profile, setProfile] = useState<any>(null);
@@ -23,20 +24,16 @@ function ProfileContent() {
   }, []);
 
   const fetchProfile = async () => {
-    const token = localStorage.getItem('access_token');
-    if (!token) {
-      window.location.href = '/auth/login';
-      return;
-    }
-
     try {
-      const res = await fetch(`${API_BASE_URL}/profile/`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      const res = await fetchWithAuth(`${API_BASE_URL}/profile/`);
       if (res.ok) {
         const data = await res.json();
         setProfile(data);
         setFormData(data);
+      } else if (res.status === 401 || res.status === 403) {
+        logout();
+      } else {
+        console.error("Lỗi tải profile:", res.statusText);
       }
     } catch (error) {
       console.error("Lỗi tải profile:", error);
@@ -46,13 +43,11 @@ function ProfileContent() {
   };
 
   const handleSave = async () => {
-    const token = localStorage.getItem('access_token');
     setSaving(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/profile/`, {
+      const res = await fetchWithAuth(`${API_BASE_URL}/profile/`, {
         method: 'PATCH',
         headers: { 
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(formData)
@@ -287,72 +282,6 @@ function ProfileContent() {
               <p className="text-[10px] text-center text-muted-foreground font-medium italic">Hoàn thành nhiệm vụ để mở khóa huy hiệu</p>
             </section>
 
-            {/* Social Links */}
-            <section className="glass p-6 space-y-4">
-              <h3 className="text-lg font-bold flex items-center gap-2">
-                <Globe className="text-accent" size={18} /> Liên kết bên ngoài
-              </h3>
-              
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <Globe className="text-muted-foreground" size={18} />
-                  {editMode ? (
-                    <input 
-                      type="text" 
-                      value={formData.social_links?.github || ''} 
-                      onChange={(e) => setFormData({...formData, social_links: {...formData.social_links, github: e.target.value}})}
-                      placeholder="Username GitHub"
-                      className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-accent"
-                    />
-                  ) : (
-                    <a href={`https://github.com/${profile?.social_links?.github}`} target="_blank" className="text-sm font-medium hover:text-accent transition-all truncate">
-                      {profile?.social_links?.github || 'Chưa cập nhật'}
-                    </a>
-                  )}
-                </div>
-                <div className="flex items-center gap-3">
-                  <Globe className="text-muted-foreground" size={18} />
-                  {editMode ? (
-                    <input 
-                      type="text" 
-                      value={formData.social_links?.linkedin || ''} 
-                      onChange={(e) => setFormData({...formData, social_links: {...formData.social_links, linkedin: e.target.value}})}
-                      placeholder="LinkedIn Profile URL"
-                      className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-accent"
-                    />
-                  ) : (
-                    <a href={profile?.social_links?.linkedin} target="_blank" className="text-sm font-medium hover:text-accent transition-all truncate">
-                      {profile?.social_links?.linkedin || 'Chưa cập nhật'}
-                    </a>
-                  )}
-                </div>
-                <div className="flex items-center gap-3">
-                  <Globe className="text-muted-foreground" size={18} />
-                  {editMode ? (
-                    <input 
-                      type="text" 
-                      value={formData.social_links?.website || ''} 
-                      onChange={(e) => setFormData({...formData, social_links: {...formData.social_links, website: e.target.value}})}
-                      placeholder="Website cá nhân"
-                      className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-accent"
-                    />
-                  ) : (
-                    <a href={profile?.social_links?.website} target="_blank" className="text-sm font-medium hover:text-accent transition-all truncate">
-                      {profile?.social_links?.website || 'Chưa cập nhật'}
-                    </a>
-                  )}
-                </div>
-              </div>
-            </section>
-
-            {/* Quick Stats */}
-            <div className="p-6 bg-accent rounded-3xl text-white shadow-glow flex items-center justify-between">
-              <div>
-                <p className="text-xs font-black uppercase opacity-70 tracking-tighter">Readiness Score</p>
-                <div className="text-4xl font-black">78%</div>
-              </div>
-              <TrendingUp size={48} className="opacity-30" />
-            </div>
           </div>
         </div>
       </main>

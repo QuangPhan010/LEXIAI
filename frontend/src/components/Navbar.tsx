@@ -8,6 +8,7 @@ import { useTheme } from 'next-themes';
 import { Sun, Moon, LogOut, Settings, User as UserIcon, Menu, X, ChevronDown, Sparkles, Briefcase, History, FileText, Bot, Map, Search, Video, Rocket } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import APIConfigModal from './APIConfigModal';
+import { logout } from '@/lib/apiClient';
 
 export default function Navbar() {
   const [apiKey, setApiKey] = useState<string | null>(null);
@@ -36,11 +37,7 @@ export default function Navbar() {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
-    localStorage.removeItem('username');
-    setUsername(null);
-    window.location.href = '/';
+    logout();
   };
 
   const toggleModel = () => {
